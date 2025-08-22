@@ -44,6 +44,33 @@
           0 10px 15px -3px rgb(0 0 0 / 0.2),
           0 4px 6px -4px rgb(0 0 0 / 0.2);
       }
+      #explanation-modal-content pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background-color: #f3f4f6;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        font-family: "Fira Code", monospace;
+      }
+      .dark #explanation-modal-content pre {
+        background-color: #1f2937;
+      }
+      .loader {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
   </head>
   <body
@@ -258,6 +285,38 @@
       </footer>
     </div>
 
+    <div
+      id="explanation-modal"
+      class="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 hidden items-center justify-center p-4"
+    >
+      <div
+        class="bg-white dark:bg-stone-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col"
+      >
+        <div
+          class="flex justify-between items-center p-4 border-b border-stone-200 dark:border-stone-700"
+        >
+          <h3
+            id="explanation-modal-title"
+            class="text-xl font-bold fira-code text-green-800 dark:text-green-400"
+          ></h3>
+          <button
+            id="explanation-modal-close"
+            class="text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
+          >
+            &times;
+          </button>
+        </div>
+        <div
+          id="explanation-modal-content"
+          class="p-6 overflow-y-auto text-stone-700 dark:text-stone-300"
+        >
+          <div class="flex justify-center items-center h-32">
+            <div class="loader"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script>
       const commandsData = [
         {
@@ -459,6 +518,12 @@
           desc: "Ex: Deleta até o final do arquivo.",
         },
         {
+          mode: "normal",
+          level: 5,
+          key: "ggdG",
+          desc: "Ex: Deleta todo o conteúdo do arquivo.",
+        },
+        {
           mode: "insert",
           key: "i",
           desc: "Entra no modo de inserção antes do cursor.",
@@ -519,6 +584,32 @@
           key: "u",
           desc: "Converte a seleção para minúsculas.",
         },
+        {
+          mode: "visual",
+          key: "ggVG",
+          desc: "Seleciona todo o conteúdo do arquivo.",
+        },
+        {
+          mode: "visual",
+          key: "viw",
+          desc: "Seleciona a palavra interna (inner word).",
+        },
+        {
+          mode: "visual",
+          key: "vaw",
+          desc: "Seleciona uma palavra (a word), incluindo espaços.",
+        },
+        {
+          mode: "visual",
+          key: 'vi"',
+          desc: "Seleciona o conteúdo dentro de aspas duplas.",
+        },
+        {
+          mode: "visual",
+          key: "vi(",
+          desc: "Seleciona o conteúdo dentro de parênteses.",
+        },
+        { mode: "visual", key: "vip", desc: "Seleciona o parágrafo interno." },
       ];
 
       const pluginKeybinds = [
@@ -689,6 +780,96 @@
       const themeToggle = document.getElementById("theme-toggle");
       const lightIcon = document.getElementById("theme-icon-light");
       const darkIcon = document.getElementById("theme-icon-dark");
+      const modal = document.getElementById("explanation-modal");
+      const modalTitle = document.getElementById("explanation-modal-title");
+      const modalContent = document.getElementById("explanation-modal-content");
+      const modalClose = document.getElementById("explanation-modal-close");
+
+      const loadingSpinner = `<div class="flex justify-center items-center h-32"><div class="loader"></div></div>`;
+
+      async function getExplanation(key, desc) {
+        modal.style.display = "flex";
+        modalTitle.textContent = key;
+        modalContent.innerHTML = loadingSpinner;
+
+        const prompt = `Explique o comando do Vim/Neovim "${key}" de forma detalhada e amigável para iniciantes. A descrição base é: "${desc}". Inclua o que ele faz, como usá-lo e um exemplo prático de uso. Formate a resposta de forma clara, usando negrito para o comando e blocos de código para exemplos.`;
+
+        let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+        const payload = { contents: chatHistory };
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+        try {
+          const response = await fetchWithRetry(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              `API request failed with status ${response.status}`,
+            );
+          }
+
+          const result = await response.json();
+          if (
+            result.candidates &&
+            result.candidates.length > 0 &&
+            result.candidates[0].content &&
+            result.candidates[0].content.parts &&
+            result.candidates[0].content.parts.length > 0
+          ) {
+            const text = result.candidates[0].content.parts[0].text;
+            modalContent.innerHTML = text
+              .replace(/```([\s\S]*?)```/g, "<pre>$1</pre>")
+              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+          } else {
+            throw new Error("Resposta da API inválida.");
+          }
+        } catch (error) {
+          modalContent.textContent =
+            "Desculpe, não foi possível obter a explicação. Tente novamente mais tarde.";
+        }
+      }
+
+      async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
+        for (let i = 0; i < retries; i++) {
+          try {
+            return await fetch(url, options);
+          } catch (error) {
+            if (i === retries - 1) throw error;
+            await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
+          }
+        }
+      }
+
+      function createCard(cmd, isPlugin = false) {
+        const card = document.createElement("div");
+        card.className =
+          "card bg-white dark:bg-stone-800 p-4 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700 flex flex-col items-center text-center";
+
+        let cardContent = `
+                <code class="fira-code text-lg font-semibold text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900/50 px-3 py-1 rounded-md mb-3">${cmd.key.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>
+                <p class="text-sm text-stone-600 dark:text-stone-400 leading-snug flex-grow mb-4">${cmd.desc}</p>
+                <button data-key="${cmd.key}" data-desc="${cmd.desc}" class="explain-btn mt-auto text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 py-1 px-3 rounded-full hover:bg-green-200 dark:hover:bg-green-800/70">✨ Explicar Comando</button>
+            `;
+
+        if (isPlugin) {
+          card.innerHTML = `
+                    <div class="flex items-center w-full mb-4">
+                        <code class="fira-code text-base font-semibold text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900/50 px-3 py-1 rounded-md mr-4">${cmd.key.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>
+                        <p class="text-sm text-stone-700 dark:text-stone-300 text-left flex-grow">${cmd.desc}</p>
+                    </div>
+                    <button data-key="${cmd.key}" data-desc="${cmd.desc}" class="explain-btn mt-auto text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 py-1 px-3 rounded-full hover:bg-green-200 dark:hover:bg-green-800/70">✨ Explicar Comando</button>
+                `;
+          card.classList.remove("text-center");
+        } else {
+          card.innerHTML = cardContent;
+        }
+
+        return card;
+      }
 
       function renderCommands() {
         commandsGrid.innerHTML = "";
@@ -702,17 +883,9 @@
             return false;
           return true;
         });
-
-        filteredCommands.forEach((cmd) => {
-          const card = document.createElement("div");
-          card.className =
-            "card bg-white dark:bg-stone-800 p-4 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700 flex flex-col justify-center items-center text-center";
-          card.innerHTML = `
-                    <code class="fira-code text-lg font-semibold text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900/50 px-3 py-1 rounded-md mb-3">${cmd.key}</code>
-                    <p class="text-sm text-stone-600 dark:text-stone-400 leading-snug">${cmd.desc}</p>
-                `;
-          commandsGrid.appendChild(card);
-        });
+        filteredCommands.forEach((cmd) =>
+          commandsGrid.appendChild(createCard(cmd)),
+        );
       }
 
       function renderPluginKeybinds() {
@@ -720,42 +893,33 @@
         const filteredBinds = pluginKeybinds.filter(
           (bind) => bind.plugin === state.plugin,
         );
-
-        filteredBinds.forEach((bind) => {
-          const card = document.createElement("div");
-          card.className =
-            "card bg-white dark:bg-stone-800 p-4 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700 flex items-center";
-          card.innerHTML = `
-                    <code class="fira-code text-base font-semibold text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900/50 px-3 py-1 rounded-md mr-4">${bind.key.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>
-                    <p class="text-sm text-stone-700 dark:text-stone-300">${bind.desc}</p>
-                `;
-          pluginGrid.appendChild(card);
-        });
+        filteredBinds.forEach((bind) =>
+          pluginGrid.appendChild(createCard(bind, true)),
+        );
       }
 
       function updateUI() {
-        document.querySelectorAll("#main-nav .nav-btn").forEach((btn) => {
-          btn.dataset.active = btn.dataset.mode === state.mode;
-        });
-
+        document
+          .querySelectorAll("#main-nav .nav-btn")
+          .forEach(
+            (btn) => (btn.dataset.active = btn.dataset.mode === state.mode),
+          );
         const isNormalMode = state.mode === "normal";
         subNavContainer.style.display = isNormalMode ? "block" : "none";
-
         if (isNormalMode) {
           document
             .querySelectorAll("#sub-nav-normal .sub-nav-btn")
-            .forEach((btn) => {
-              btn.dataset.active = btn.dataset.level == state.level;
-            });
+            .forEach(
+              (btn) => (btn.dataset.active = btn.dataset.level == state.level),
+            );
         }
-
         introTitle.textContent = introContent[state.mode].title;
         introText.textContent = introContent[state.mode].text;
-
-        document.querySelectorAll(".plugin-nav-btn").forEach((btn) => {
-          btn.dataset.active = btn.dataset.plugin === state.plugin;
-        });
-
+        document
+          .querySelectorAll(".plugin-nav-btn")
+          .forEach(
+            (btn) => (btn.dataset.active = btn.dataset.plugin === state.plugin),
+          );
         renderCommands();
         renderPluginKeybinds();
       }
@@ -773,31 +937,48 @@
       }
 
       themeToggle.addEventListener("click", () => {
-        const currentTheme = localStorage.getItem("theme") || "light";
-        const newTheme = currentTheme === "light" ? "dark" : "light";
+        const newTheme = document.documentElement.classList.contains("dark")
+          ? "light"
+          : "dark";
         localStorage.setItem("theme", newTheme);
         applyTheme(newTheme);
       });
 
       mainNav.addEventListener("click", (e) => {
-        if (e.target.tagName === "BUTTON") {
+        if (e.target.matches("button")) {
           state.mode = e.target.dataset.mode;
           state.level = "all";
           updateUI();
         }
       });
-
       subNavNormal.addEventListener("click", (e) => {
-        if (e.target.tagName === "BUTTON") {
+        if (e.target.matches("button")) {
           state.level = e.target.dataset.level;
           updateUI();
         }
       });
-
       pluginNav.addEventListener("click", (e) => {
-        if (e.target.tagName === "BUTTON") {
+        if (e.target.matches("button")) {
           state.plugin = e.target.dataset.plugin;
           updateUI();
+        }
+      });
+
+      document.body.addEventListener("click", (e) => {
+        if (e.target.classList.contains("explain-btn")) {
+          const key = e.target.dataset.key;
+          const desc = e.target.dataset.desc;
+          getExplanation(key, desc);
+        }
+      });
+
+      modalClose.addEventListener(
+        "click",
+        () => (modal.style.display = "none"),
+      );
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) {
+          modal.style.display = "none";
         }
       });
 
