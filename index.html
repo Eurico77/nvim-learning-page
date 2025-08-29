@@ -1,996 +1,279 @@
-<!doctype html>
-<html lang="pt-BR">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mapa Interativo de Motions do Vim/Nvim</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Chosen Palette: Calm Harmony (Stone, Muted Green) -->
-    <!-- Application Structure Plan: A tab-based SPA with a main navigation for Vim modes (Normal, Insert, Visual) and a dynamic sub-navigation for proficiency levels within Normal mode. Content is displayed in a filterable grid of cards. This structure was chosen to transform the linear text document into an interactive, explorable tool, allowing users to focus on specific concepts without scrolling, which enhances targeted learning and reduces cognitive load. -->
-    <!-- Visualization & Content Choices: Report Info: Vim commands/descriptions -> Goal: Organize/Inform -> Viz/Presentation: Interactive card grid -> Interaction: JS-powered filtering via navigation buttons -> Justification: Cards modularize information for easy digestion, and filtering provides a focused learning path, which is superior to a static text file. Method: HTML/Tailwind for structure/style, Vanilla JS for interactivity. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
-    <script>
-      tailwind.config = {
-        darkMode: "class",
-      };
-    </script>
-    <style>
-      body {
-        font-family: "Inter", sans-serif;
-      }
-      .fira-code {
-        font-family: "Fira Code", monospace;
-      }
-      .nav-btn,
-      .sub-nav-btn,
-      .plugin-nav-btn,
-      .card {
-        transition: all 0.2s ease-in-out;
-      }
-      .card:hover {
-        transform: translateY(-4px);
-        box-shadow:
-          0 10px 15px -3px rgb(0 0 0 / 0.1),
-          0 4px 6px -4px rgb(0 0 0 / 0.1);
-      }
-      .dark .card:hover {
-        box-shadow:
-          0 10px 15px -3px rgb(0 0 0 / 0.2),
-          0 4px 6px -4px rgb(0 0 0 / 0.2);
-      }
-      #explanation-modal-content pre {
-        white-space: pre-wrap;
-        word-wrap: break-word;
-        background-color: #f3f4f6;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        font-family: "Fira Code", monospace;
-      }
-      .dark #explanation-modal-content pre {
-        background-color: #1f2937;
-      }
-      .loader {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #3498db;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-    </style>
-  </head>
-  <body
-    class="bg-stone-100 text-stone-800 dark:bg-stone-900 dark:text-stone-300 antialiased"
-  >
-    <div class="absolute top-4 right-4">
-      <button
-        id="theme-toggle"
-        class="p-2 rounded-full bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700 dark:focus:ring-offset-stone-900"
-      >
-        <svg
-          id="theme-icon-light"
-          class="w-6 h-6 hidden"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-          ></path>
+<!DOCTYPE html>
+<html lang="pt-BR" class="">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guia Interativo de Atalhos Neovim</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .active-filter {
+      background-color: #52525b;
+      /* zinc-600 */
+      color: #ffffff;
+    }
+
+    html.dark .active-filter {
+      background-color: #d4d4d8;
+      /* zinc-300 */
+      color: #18181b;
+      /* zinc-900 */
+    }
+
+    .command-highlight {
+      background-color: #fef3c7;
+      /* amber-100 */
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+
+    html.dark .command-highlight {
+      background-color: #78350f;
+      /* amber-900 */
+    }
+  </style>
+</head>
+
+<body class="bg-stone-100 dark:bg-zinc-900 text-stone-800 dark:text-stone-200 transition-colors duration-300">
+
+  <div class="container mx-auto p-4 md:p-8 max-w-5xl">
+    <header class="text-center mb-8 relative">
+      <h1 class="text-3xl md:text-4xl font-bold text-zinc-800 dark:text-zinc-100">Guia Interativo de Atalhos Neovim</h1>
+      <p class="text-stone-600 dark:text-stone-400 mt-2">Seu documento vivo para dominar o Neovim. Filtre por modo ou
+        pesquise para encontrar comandos.</p>
+      <button id="theme-toggle"
+        class="absolute top-0 right-0 p-2 rounded-full text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-zinc-700 transition-colors">
+        <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
         </svg>
-        <svg
-          id="theme-icon-dark"
-          class="w-6 h-6 hidden"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          ></path>
+        <svg id="theme-icon-moon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+          stroke="currentColor" class="w-6 h-6 hidden">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
         </svg>
       </button>
-    </div>
+    </header>
 
-    <div class="container mx-auto px-4 py-8 md:py-12">
-      <header class="text-center mb-10">
-        <h1
-          class="text-4xl md:text-5xl font-bold text-stone-900 dark:text-stone-100"
-        >
-          Mapa Interativo de Motions
-        </h1>
-        <p class="mt-2 text-lg text-stone-600 dark:text-stone-400">
-          Um guia para dominar a navegação no Vim/Nvim.
-        </p>
-      </header>
-
-      <main>
-        <nav
-          id="main-nav"
-          class="flex justify-center items-center gap-2 md:gap-4 mb-8 p-2 bg-stone-200 dark:bg-stone-800 rounded-xl max-w-md mx-auto"
-        >
-          <button
-            data-mode="normal"
-            class="nav-btn w-full py-2 px-4 rounded-lg font-semibold text-stone-700 dark:text-stone-200 data-[active]:bg-green-800 data-[active]:text-green-50 data-[active]:shadow-md dark:data-[active]:bg-green-600"
-          >
-            Modo Normal
-          </button>
-          <button
-            data-mode="insert"
-            class="nav-btn w-full py-2 px-4 rounded-lg font-semibold text-stone-700 dark:text-stone-200 data-[active]:bg-green-800 data-[active]:text-green-50 data-[active]:shadow-md dark:data-[active]:bg-green-600"
-          >
-            Modo de Inserção
-          </button>
-          <button
-            data-mode="visual"
-            class="nav-btn w-full py-2 px-4 rounded-lg font-semibold text-stone-700 dark:text-stone-200 data-[active]:bg-green-800 data-[active]:text-green-50 data-[active]:shadow-md dark:data-[active]:bg-green-600"
-          >
-            Modo Visual
-          </button>
+    <div class="sticky top-0 bg-stone-100/80 dark:bg-zinc-900/80 backdrop-blur-sm py-4 z-10 mb-8">
+      <div class="flex flex-col md:flex-row gap-4">
+        <div class="relative flex-grow">
+          <input type="text" id="searchInput" placeholder="Pesquisar comando ou descrição..."
+            class="w-full p-3 pl-10 border border-stone-300 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500 transition bg-white dark:bg-zinc-800 text-stone-800 dark:text-stone-200">
+          <svg class="w-5 h-5 text-stone-400 absolute top-1/2 left-3 -translate-y-1/2"
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+        </div>
+        <nav id="filter-nav" class="flex flex-wrap gap-2 justify-center">
+          <button data-mode="all"
+            class="filter-btn py-2 px-4 rounded-lg font-semibold transition-colors duration-200 bg-white dark:bg-zinc-800 shadow-sm hover:bg-stone-200 dark:hover:bg-zinc-700 active-filter">Todos</button>
+          <button data-mode="normal"
+            class="filter-btn py-2 px-4 rounded-lg font-semibold transition-colors duration-200 bg-white dark:bg-zinc-800 shadow-sm hover:bg-stone-200 dark:hover:bg-zinc-700">Normal</button>
+          <button data-mode="insert"
+            class="filter-btn py-2 px-4 rounded-lg font-semibold transition-colors duration-200 bg-white dark:bg-zinc-800 shadow-sm hover:bg-stone-200 dark:hover:bg-zinc-700">Inserção</button>
+          <button data-mode="visual"
+            class="filter-btn py-2 px-4 rounded-lg font-semibold transition-colors duration-200 bg-white dark:bg-zinc-800 shadow-sm hover:bg-stone-200 dark:hover:bg-zinc-700">Visual</button>
+          <button data-mode="plugins"
+            class="filter-btn py-2 px-4 rounded-lg font-semibold transition-colors duration-200 bg-white dark:bg-zinc-800 shadow-sm hover:bg-stone-200 dark:hover:bg-zinc-700">Plugins</button>
         </nav>
-
-        <div id="sub-nav-container" class="mb-10">
-          <div
-            id="sub-nav-normal"
-            class="sub-nav flex flex-wrap justify-center gap-2 md:gap-3 bg-stone-200/50 dark:bg-stone-800/50 p-2 rounded-xl max-w-2xl mx-auto"
-          >
-            <button
-              data-level="all"
-              class="sub-nav-btn py-1 px-3 text-sm rounded-md font-medium text-stone-600 dark:text-stone-300 data-[active]:bg-lime-400 data-[active]:text-lime-950 dark:data-[active]:bg-lime-500 dark:data-[active]:text-lime-950"
-            >
-              Todos
-            </button>
-            <button
-              data-level="1"
-              class="sub-nav-btn py-1 px-3 text-sm rounded-md font-medium text-stone-600 dark:text-stone-300 data-[active]:bg-lime-400 data-[active]:text-lime-950 dark:data-[active]:bg-lime-500 dark:data-[active]:text-lime-950"
-            >
-              Nível 1: Base
-            </button>
-            <button
-              data-level="2"
-              class="sub-nav-btn py-1 px-3 text-sm rounded-md font-medium text-stone-600 dark:text-stone-300 data-[active]:bg-lime-400 data-[active]:text-lime-950 dark:data-[active]:bg-lime-500 dark:data-[active]:text-lime-950"
-            >
-              Nível 2: Palavras
-            </button>
-            <button
-              data-level="3"
-              class="sub-nav-btn py-1 px-3 text-sm rounded-md font-medium text-stone-600 dark:text-stone-300 data-[active]:bg-lime-400 data-[active]:text-lime-950 dark:data-[active]:bg-lime-500 dark:data-[active]:text-lime-950"
-            >
-              Nível 3: Linha
-            </button>
-            <button
-              data-level="4"
-              class="sub-nav-btn py-1 px-3 text-sm rounded-md font-medium text-stone-600 dark:text-stone-300 data-[active]:bg-lime-400 data-[active]:text-lime-950 dark:data-[active]:bg-lime-500 dark:data-[active]:text-lime-950"
-            >
-              Nível 4: Arquivo
-            </button>
-            <button
-              data-level="5"
-              class="sub-nav-btn py-1 px-3 text-sm rounded-md font-medium text-stone-600 dark:text-stone-300 data-[active]:bg-lime-400 data-[active]:text-lime-950 dark:data-[active]:bg-lime-500 dark:data-[active]:text-lime-950"
-            >
-              Nível 5: Gramática
-            </button>
-          </div>
-        </div>
-
-        <div id="content-intro" class="text-center max-w-3xl mx-auto mb-10">
-          <h2
-            id="intro-title"
-            class="text-2xl font-bold mb-2 text-stone-900 dark:text-stone-100"
-          ></h2>
-          <p id="intro-text" class="text-stone-600 dark:text-stone-400"></p>
-        </div>
-
-        <div
-          id="commands-grid"
-          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
-        ></div>
-      </main>
-
-      <section id="plugin-keybinds" class="mt-16">
-        <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-stone-900 dark:text-stone-100">
-            Seus Keybinds de Plugins
-          </h2>
-          <p class="mt-2 text-lg text-stone-600 dark:text-stone-400">
-            Atalhos personalizados da sua configuração.
-          </p>
-        </div>
-        <div
-          class="flex flex-wrap justify-center gap-2 border-b-2 border-stone-200 dark:border-stone-700 mb-8"
-        >
-          <button
-            data-plugin="neotree"
-            class="plugin-nav-btn font-medium py-2 px-4 border-b-2 border-transparent text-stone-500 dark:text-stone-400 data-[active]:border-green-800 data-[active]:bg-green-100 data-[active]:text-green-800 dark:data-[active]:border-green-400 dark:data-[active]:bg-stone-800 dark:data-[active]:text-green-400"
-          >
-            Neotree
-          </button>
-          <button
-            data-plugin="telescope"
-            class="plugin-nav-btn font-medium py-2 px-4 border-b-2 border-transparent text-stone-500 dark:text-stone-400 data-[active]:border-green-800 data-[active]:bg-green-100 data-[active]:text-green-800 dark:data-[active]:border-green-400 dark:data-[active]:bg-stone-800 dark:data-[active]:text-green-400"
-          >
-            Telescope
-          </button>
-          <button
-            data-plugin="lsp"
-            class="plugin-nav-btn font-medium py-2 px-4 border-b-2 border-transparent text-stone-500 dark:text-stone-400 data-[active]:border-green-800 data-[active]:bg-green-100 data-[active]:text-green-800 dark:data-[active]:border-green-400 dark:data-[active]:bg-stone-800 dark:data-[active]:text-green-400"
-          >
-            LSP
-          </button>
-          <button
-            data-plugin="harpoon"
-            class="plugin-nav-btn font-medium py-2 px-4 border-b-2 border-transparent text-stone-500 dark:text-stone-400 data-[active]:border-green-800 data-[active]:bg-green-100 data-[active]:text-green-800 dark:data-[active]:border-green-400 dark:data-[active]:bg-stone-800 dark:data-[active]:text-green-400"
-          >
-            Harpoon
-          </button>
-          <button
-            data-plugin="geral"
-            class="plugin-nav-btn font-medium py-2 px-4 border-b-2 border-transparent text-stone-500 dark:text-stone-400 data-[active]:border-green-800 data-[active]:bg-green-100 data-[active]:text-green-800 dark:data-[active]:border-green-400 dark:data-[active]:bg-stone-800 dark:data-[active]:text-green-400"
-          >
-            Geral
-          </button>
-        </div>
-        <div
-          id="plugin-grid"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-        ></div>
-      </section>
-
-      <footer
-        class="mt-16 text-center border-t border-stone-300 dark:border-stone-700 pt-8"
-      >
-        <h3 class="text-xl font-bold mb-4 text-stone-900 dark:text-stone-100">
-          Como Usar Este Mapa
-        </h3>
-        <div
-          class="max-w-3xl mx-auto text-stone-600 dark:text-stone-400 space-y-2"
-        >
-          <p>
-            <strong>1. Foco Semanal:</strong> Dedique uma semana para cada
-            "Nível" do Modo Normal para construir uma base sólida.
-          </p>
-          <p>
-            <strong>2. Prática Ativa:</strong> Use os botões de filtro para se
-            concentrar em um conjunto de comandos. Abra seu editor e pratique-os
-            em um arquivo real.
-          </p>
-          <p>
-            <strong>3. Combine e Crie:</strong> Lembre-se que o poder do Vim
-            está na composição: **operador + movimento**. Experimente combinar
-            os operadores (`d`, `c`, `y`) com os movimentos que você aprende.
-          </p>
-        </div>
-      </footer>
-    </div>
-
-    <div
-      id="explanation-modal"
-      class="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 hidden items-center justify-center p-4"
-    >
-      <div
-        class="bg-white dark:bg-stone-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col"
-      >
-        <div
-          class="flex justify-between items-center p-4 border-b border-stone-200 dark:border-stone-700"
-        >
-          <h3
-            id="explanation-modal-title"
-            class="text-xl font-bold fira-code text-green-800 dark:text-green-400"
-          ></h3>
-          <button
-            id="explanation-modal-close"
-            class="text-stone-500 hover:text-stone-800 dark:hover:text-stone-200"
-          >
-            &times;
-          </button>
-        </div>
-        <div
-          id="explanation-modal-content"
-          class="p-6 overflow-y-auto text-stone-700 dark:text-stone-300"
-        >
-          <div class="flex justify-center items-center h-32">
-            <div class="loader"></div>
-          </div>
-        </div>
       </div>
     </div>
 
-    <script>
-      const commandsData = [
-        {
-          mode: "normal",
-          level: 1,
-          key: "h",
-          desc: "Move o cursor para a esquerda.",
-        },
-        {
-          mode: "normal",
-          level: 1,
-          key: "j",
-          desc: "Move o cursor para baixo.",
-        },
-        {
-          mode: "normal",
-          level: 1,
-          key: "k",
-          desc: "Move o cursor para cima.",
-        },
-        {
-          mode: "normal",
-          level: 1,
-          key: "l",
-          desc: "Move o cursor para a direita.",
-        },
-        {
-          mode: "normal",
-          level: 2,
-          key: "w",
-          desc: "Pula para o início da próxima palavra.",
-        },
-        {
-          mode: "normal",
-          level: 2,
-          key: "b",
-          desc: "Volta para o início da palavra anterior.",
-        },
-        {
-          mode: "normal",
-          level: 2,
-          key: "e",
-          desc: "Pula para o final da palavra atual/próxima.",
-        },
-        {
-          mode: "normal",
-          level: 2,
-          key: "ge",
-          desc: "Volta para o final da palavra anterior.",
-        },
-        {
-          mode: "normal",
-          level: 2,
-          key: "W, B, E",
-          desc: 'Versões "maiusculas", ignoram pontuações.',
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: "0",
-          desc: "Vai para o início absoluto da linha.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: "^",
-          desc: "Vai para o primeiro caractere não-branco.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: "$",
-          desc: "Vai para o final da linha.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: "f{char}",
-          desc: "Encontra a próxima ocorrência de {char}.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: "F{char}",
-          desc: "Encontra a ocorrência anterior de {char}.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: "t{char}",
-          desc: "Move até antes da próxima ocorrência de {char}.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: "T{char}",
-          desc: "Move até depois da ocorrência anterior de {char}.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: ";",
-          desc: "Repete o último comando f, F, t, ou T.",
-        },
-        {
-          mode: "normal",
-          level: 3,
-          key: ",",
-          desc: "Repete o último comando na direção oposta.",
-        },
-        {
-          mode: "normal",
-          level: 4,
-          key: "gg",
-          desc: "Vai para a primeira linha do arquivo.",
-        },
-        {
-          mode: "normal",
-          level: 4,
-          key: "G",
-          desc: "Vai para a última linha do arquivo.",
-        },
-        {
-          mode: "normal",
-          level: 4,
-          key: "{n}G",
-          desc: "Vai para a linha de número {n}.",
-        },
-        {
-          mode: "normal",
-          level: 4,
-          key: "Ctrl + d",
-          desc: "Rola meia página para baixo.",
-        },
-        {
-          mode: "normal",
-          level: 4,
-          key: "Ctrl + u",
-          desc: "Rola meia página para cima.",
-        },
-        {
-          mode: "normal",
-          level: 4,
-          key: "%",
-          desc: "Pula para o parêntese/colchete/chave correspondente.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "d + motion",
-          desc: "Deleta (recorta) o texto coberto pelo movimento.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "c + motion",
-          desc: "Muda (deleta e entra em modo de inserção).",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "y + motion",
-          desc: "Copia (yank) o texto.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "dw",
-          desc: "Ex: Deleta uma palavra.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "d$",
-          desc: "Ex: Deleta até o final da linha.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "caw",
-          desc: "Ex: Muda a palavra inteira (change around word).",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: 'ci"',
-          desc: "Ex: Muda o conteúdo dentro das aspas.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "yy",
-          desc: "Ex: Copia a linha inteira.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "dG",
-          desc: "Ex: Deleta até o final do arquivo.",
-        },
-        {
-          mode: "normal",
-          level: 5,
-          key: "ggdG",
-          desc: "Ex: Deleta todo o conteúdo do arquivo.",
-        },
-        {
-          mode: "insert",
-          key: "i",
-          desc: "Entra no modo de inserção antes do cursor.",
-        },
-        {
-          mode: "insert",
-          key: "a",
-          desc: "Entra no modo de inserção depois do cursor.",
-        },
-        {
-          mode: "insert",
-          key: "I",
-          desc: "Entra no modo de inserção no início da linha.",
-        },
-        {
-          mode: "insert",
-          key: "A",
-          desc: "Entra no modo de inserção no final da linha.",
-        },
-        {
-          mode: "insert",
-          key: "o",
-          desc: "Cria uma nova linha abaixo e entra em inserção.",
-        },
-        {
-          mode: "insert",
-          key: "O",
-          desc: "Cria uma nova linha acima e entra em inserção.",
-        },
-        {
-          mode: "insert",
-          key: "Esc / Ctrl+[",
-          desc: "Volta para o Modo Normal.",
-        },
-        {
-          mode: "visual",
-          key: "v",
-          desc: "Inicia modo Visual (seleção por caractere).",
-        },
-        { mode: "visual", key: "V", desc: "Inicia modo Visual por linha." },
-        {
-          mode: "visual",
-          key: "Ctrl + v",
-          desc: "Inicia modo Visual em bloco (retangular).",
-        },
-        { mode: "visual", key: "d / x", desc: "Deleta (recorta) a seleção." },
-        { mode: "visual", key: "y", desc: "Copia a seleção." },
-        { mode: "visual", key: "c", desc: "Muda a seleção." },
-        { mode: "visual", key: ">", desc: "Aumenta a indentação da seleção." },
-        { mode: "visual", key: "<", desc: "Diminui a indentação da seleção." },
-        {
-          mode: "visual",
-          key: "U",
-          desc: "Converte a seleção para MAIÚSCULAS.",
-        },
-        {
-          mode: "visual",
-          key: "u",
-          desc: "Converte a seleção para minúsculas.",
-        },
-        {
-          mode: "visual",
-          key: "ggVG",
-          desc: "Seleciona todo o conteúdo do arquivo.",
-        },
-        {
-          mode: "visual",
-          key: "viw",
-          desc: "Seleciona a palavra interna (inner word).",
-        },
-        {
-          mode: "visual",
-          key: "vaw",
-          desc: "Seleciona uma palavra (a word), incluindo espaços.",
-        },
-        {
-          mode: "visual",
-          key: 'vi"',
-          desc: "Seleciona o conteúdo dentro de aspas duplas.",
-        },
-        {
-          mode: "visual",
-          key: "vi(",
-          desc: "Seleciona o conteúdo dentro de parênteses.",
-        },
-        { mode: "visual", key: "vip", desc: "Seleciona o parágrafo interno." },
-      ];
+    <main id="commands-container" class="space-y-6">
+    </main>
 
-      const pluginKeybinds = [
-        { plugin: "neotree", key: "<leader>e", desc: "Alternar NeoTree" },
-        {
-          plugin: "neotree",
-          key: "<leader>o",
-          desc: "Revelar arquivo no NeoTree",
-        },
-        { plugin: "neotree", key: "<leader>ef", desc: "Focar no NeoTree" },
-        { plugin: "telescope", key: "<leader>sh", desc: "[P]esquisar [A]juda" },
-        {
-          plugin: "telescope",
-          key: "<leader>sk",
-          desc: "[P]esquisar [M]apas de Teclas",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>sf",
-          desc: "[P]esquisar [A]rquivos",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>ss",
-          desc: "[P]esquisar [S]elecionar Telescope",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>sw",
-          desc: "[P]esquisar [P]alavra atual",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>sg",
-          desc: "[P]esquisar por [G]rep",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>sd",
-          desc: "[P]esquisar [D]iagnósticos",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>sr",
-          desc: "[P]esquisar e [R]esumir",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>s.",
-          desc: "[P]esquisar Arquivos Recentes",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader><leader>",
-          desc: "Encontrar buffers existentes",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>/",
-          desc: 'Pesquisa "fuzzy" no buffer atual',
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>s/",
-          desc: "[P]esquisar [/] em Arquivos Abertos",
-        },
-        {
-          plugin: "telescope",
-          key: "<leader>sn",
-          desc: "[P]esquisar arquivos do [N]eovim",
-        },
-        { plugin: "lsp", key: "grn", desc: "[R]e[n]omear" },
-        { plugin: "lsp", key: "gra", desc: "Ir para [A]ção de Código" },
-        { plugin: "lsp", key: "grr", desc: "Ir para [R]eferências" },
-        { plugin: "lsp", key: "gri", desc: "Ir para [I]mplementação" },
-        { plugin: "lsp", key: "grd", desc: "Ir para [D]efinição" },
-        { plugin: "lsp", key: "grD", desc: "Ir para [D]eclaração" },
-        { plugin: "lsp", key: "gO", desc: "Abrir Símbolos do Documento" },
-        { plugin: "lsp", key: "gW", desc: "Abrir Símbolos do Workspace" },
-        { plugin: "lsp", key: "grt", desc: "Ir para Definição de [T]ipo" },
-        {
-          plugin: "lsp",
-          key: "<leader>th",
-          desc: "Alternar Dicas Inlay ([H]ints)",
-        },
-        { plugin: "lsp", key: "<leader>f", desc: "[F]ormatar buffer" },
-        {
-          plugin: "harpoon",
-          key: "<leader>a",
-          desc: "Adicionar arquivo à lista do Harpoon",
-        },
-        {
-          plugin: "harpoon",
-          key: "<C-e>",
-          desc: "Alternar menu rápido do Harpoon",
-        },
-        {
-          plugin: "harpoon",
-          key: "<leader>h1",
-          desc: "Navegar para arquivo 1",
-        },
-        {
-          plugin: "harpoon",
-          key: "<leader>h2",
-          desc: "Navegar para arquivo 2",
-        },
-        {
-          plugin: "harpoon",
-          key: "<leader>h3",
-          desc: "Navegar para arquivo 3",
-        },
-        {
-          plugin: "harpoon",
-          key: "<leader>h4",
-          desc: "Navegar para arquivo 4",
-        },
-        {
-          plugin: "harpoon",
-          key: "<leader>hp",
-          desc: "Ir para arquivo anterior",
-        },
-        {
-          plugin: "harpoon",
-          key: "<leader>hn",
-          desc: "Ir para próximo arquivo",
-        },
-        {
-          plugin: "geral",
-          key: "<leader>qa",
-          desc: "Sair do Neovim sem salvar",
-        },
-        {
-          plugin: "geral",
-          key: "<leader>b",
-          desc: "Focar no último buffer ativo",
-        },
-      ];
+    <div id="no-results" class="text-center py-12 hidden">
+      <h3 class="text-xl font-semibold text-stone-700 dark:text-stone-300">Nenhum comando encontrado</h3>
+      <p class="text-stone-500 dark:text-stone-400 mt-2">Tente ajustar sua busca ou o filtro de modo.</p>
+    </div>
 
-      const introContent = {
-        normal: {
-          title: "Modo Normal: O Centro de Comando",
-          text: "Este é seu modo principal. Use-o para navegar pelo arquivo e executar comandos de edição. A eficiência no Vim vem de dominar a navegação neste modo.",
-        },
-        insert: {
-          title: "Modo de Inserção: Digitando Texto",
-          text: "Use este modo apenas para digitar. O objetivo é entrar, escrever o que precisa e sair rapidamente de volta para o Modo Normal.",
-        },
-        visual: {
-          title: "Modo Visual: Seleção Precisa",
-          text: "Use para selecionar blocos de texto (caracteres, linhas ou retângulos) e aplicar um comando a toda a seleção de uma vez.",
-        },
-      };
+  </div>
 
-      const state = {
-        mode: "normal",
-        level: "all",
-        plugin: "neotree",
-      };
+  <script>
+    const commandsData = [
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`h`, `j`, `k`, `l`', description: 'Move o cursor para esquerda, baixo, cima e direita.', example: 'Use `j` para descer uma linha ou `10j` para descer 10 linhas de uma vez. O mesmo vale para `h`, `k`, `l`.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`w`', description: '**(word)** Avança o cursor para o início da próxima palavra.', example: 'Em uma linha com `const nome = "valor"`, posicione o cursor no início. Pressione `w` 3 vezes para pular para `"valor"`. Use `b` para voltar palavra por palavra.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`b`', description: '**(backward)** Volta o cursor para o início da palavra anterior.', example: 'Se você avançou com `w` e passou do ponto, pressione `b` para retornar à palavra anterior sem precisar usar as setas.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`e`', description: '**(end)** Move o cursor para o final da palavra atual.', example: 'Para adicionar algo no final de uma palavra, use `e` para posicionar o cursor e `a` para entrar no modo de inserção.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`0`', description: 'Move o cursor para o início da linha (coluna 0).', example: 'Use `0` para ir ao início absoluto da linha, mesmo que haja espaços ou tabulações.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`^`', description: 'Move para o primeiro caractere não branco da linha.', example: 'Em uma linha indentada, `^` leva o cursor para o início do código, ignorando a indentação.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`$`', description: 'Move o cursor para o final da linha.', example: 'Para adicionar um ponto e vírgula no final da linha, use `$` seguido de `a` e digite `;`.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`gg`', description: '**(go)** Vai para o início do arquivo.', example: 'Precisa adicionar um `import` no topo do arquivo? Pressione `gg` para ir instantaneamente para a primeira linha.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`G`', description: '**(Go)** Vai para o final do arquivo.', example: 'Para verificar o final de um arquivo de log ou adicionar algo na última linha, use `G`.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`50G`', description: 'Vai para a linha 50.', example: 'Se um erro aponta para a linha 123, digite `123G` para pular diretamente para ela.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`i`', description: '**(insert)** Entra no Modo de Inserção antes do cursor.', example: 'Posicione o cursor onde quer começar a digitar e pressione `i`.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`a`', description: '**(append)** Entra no Modo de Inserção depois do cursor.', example: 'Para adicionar um caractere no final de uma palavra, posicione o cursor no último caractere e pressione `a`.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`o`', description: '**(open)** Cria uma nova linha abaixo e entra em Modo de Inserção.', example: 'É a forma mais rápida de adicionar uma nova linha de código abaixo da atual.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`O`', description: 'Cria uma nova linha acima e entra em Modo de Inserção.', example: 'Útil para adicionar uma linha de comentário ou uma declaração de variável acima da linha atual.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`dd`', description: 'Deleta a linha inteira.', example: 'Para remover uma linha de código temporária ou um comentário, posicione o cursor em qualquer lugar da linha e pressione `dd`. A linha será recortada (você pode colá-la com `p`).'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`dw`', description: '**(delete word)** Deleta da posição do cursor até o final da palavra.', example: 'Em `const nomeVariavel = 1;`, se o cursor estiver no `n` de `nomeVariavel`, `dw` deletará a palavra inteira.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`cw`', description: '**(change word)** Deleta a palavra e entra em Modo de Inserção.', example: 'Para renomear uma variável rapidamente, coloque o cursor sobre ela, digite `cw`, escreva o novo nome e pressione `Esc`.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`cc`', description: '**(change line)** Deleta a linha inteira e entra em Modo de Inserção.', example: 'Use `cc` para reescrever uma linha inteira do zero.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`yy`', description: 'Copia a linha inteira.', example: 'Para duplicar uma linha, pressione `yy` para copiá-la e `p` para colá-la na linha de baixo.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`p`', description: '**(put)** Cola o conteúdo copiado/recortado depois do cursor.', example: 'Após usar `dd` ou `yy`, mova o cursor para o local desejado e use `p` para colar.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`x`', description: 'Deleta o caractere sob o cursor.', example: 'Equivalente a pressionar "Delete", mas sem sair do Modo Normal.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`.`', description: 'Repete o último comando de alteração.', example: 'Se você alterou uma palavra com `cw`, pode ir para outra palavra e pressionar `.` para aplicar a mesma alteração.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`u`', description: '**(undo)** Desfaz a última ação.', example: 'Deletou uma linha com `dd` por engano? Pressione `u` para trazê-la de volta.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`Ctrl + r`', description: '**(redo)** Refaz a última ação desfeita.', example: 'Se você desfez algo com `u` mas se arrependeu, `Ctrl + r` refaz a ação.'},
+      {mode: 'normal', context: 'Busca e Substituição', command: '`/texto`', description: 'Inicia uma busca para frente por "texto".', example: 'Digite `/useState` e pressione Enter para encontrar a próxima ocorrência do hook no seu componente React.'},
+      {mode: 'normal', context: 'Busca e Substituição', command: '`n`', description: '**(next)** Pula para a próxima ocorrência da busca.', example: 'Após buscar por uma palavra, continue pressionando `n` para navegar por todas as ocorrências.'},
+      {mode: 'normal', context: 'Busca e Substituição', command: '`*`', description: 'Busca pela palavra que está sob o cursor.', example: 'Coloque o cursor sobre o nome de uma função e pressione `*` para destacar todas as suas ocorrências no arquivo. Use `n` para pular para a próxima.'},
+      {mode: 'insert', context: 'Sair do Modo', command: '`Esc` ou `Ctrl + [`', description: 'Volta para o Modo Normal.', example: 'Após terminar de digitar, pressione `Esc` para retornar ao modo de comandos e poder navegar ou executar outras ações.'},
+      {mode: 'visual', context: 'Entrada no Modo', command: '`v`', description: 'Entra no Modo Visual (seleção por caractere).', example: 'Pressione `v`, use `w` ou `l` para selecionar um trecho de texto e depois `y` para copiá-lo.'},
+      {mode: 'visual', context: 'Entrada no Modo', command: '`V`', description: 'Entra no Modo Visual de Linha (seleção por linhas inteiras).', example: 'Pressione `V`, depois `j` algumas vezes para selecionar várias linhas e `d` para deletá-las de uma vez.'},
+      {mode: 'visual', context: 'Ações na Seleção', command: '`>`', description: 'Aumenta a indentação do bloco selecionado.', example: 'Selecione um bloco de código com `V` e `j`/`k`, depois pressione `>` para indentá-lo.'},
+      {mode: 'visual', context: 'Ações na Seleção', command: '`<`', description: 'Diminui a indentação do bloco selecionado.', example: 'Se um bloco de código está indentado demais, selecione-o e pressione `<` para corrigir.'},
+      {mode: 'plugins', context: 'nvim-surround', command: '`cs"\'`', description: '**(change surrounding)** Muda as aspas duplas para aspas simples.', example: 'Em um texto como `"Olá, mundo"`, coloque o cursor dentro das aspas e digite `cs"\'` para transformá-lo em `\'Olá, mundo\'`.'},
+      {mode: 'plugins', context: 'nvim-surround', command: '`ysiw)`', description: '**(you surround inside word)** Envolve a palavra atual com parênteses.', example: 'Na palavra `variavel`, posicione o cursor sobre ela e digite `ysiw)` para transformá-la em `(variavel)`.'}
+    ];
 
-      const mainNav = document.getElementById("main-nav");
-      const subNavContainer = document.getElementById("sub-nav-container");
-      const subNavNormal = document.getElementById("sub-nav-normal");
-      const commandsGrid = document.getElementById("commands-grid");
-      const introTitle = document.getElementById("intro-title");
-      const introText = document.getElementById("intro-text");
-      const pluginNav = document.querySelector("#plugin-keybinds .flex");
-      const pluginGrid = document.getElementById("plugin-grid");
-      const themeToggle = document.getElementById("theme-toggle");
-      const lightIcon = document.getElementById("theme-icon-light");
-      const darkIcon = document.getElementById("theme-icon-dark");
-      const modal = document.getElementById("explanation-modal");
-      const modalTitle = document.getElementById("explanation-modal-title");
-      const modalContent = document.getElementById("explanation-modal-content");
-      const modalClose = document.getElementById("explanation-modal-close");
+    const commandsContainer = document.getElementById('commands-container');
+    const searchInput = document.getElementById('searchInput');
+    const filterNav = document.getElementById('filter-nav');
+    const noResults = document.getElementById('no-results');
+    const themeToggle = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('theme-icon-sun');
+    const moonIcon = document.getElementById('theme-icon-moon');
 
-      const loadingSpinner = `<div class="flex justify-center items-center h-32"><div class="loader"></div></div>`;
+    let currentMode = 'all';
+    let currentSearch = '';
 
-      async function getExplanation(key, desc) {
-        modal.style.display = "flex";
-        modalTitle.textContent = key;
-        modalContent.innerHTML = loadingSpinner;
-
-        const prompt = `Explique o comando do Vim/Neovim "${key}" de forma detalhada e amigável para iniciantes. A descrição base é: "${desc}". Inclua o que ele faz, como usá-lo e um exemplo prático de uso. Formate a resposta de forma clara, usando negrito para o comando e blocos de código para exemplos.`;
-
-        let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-        const payload = { contents: chatHistory };
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-        try {
-          const response = await fetchWithRetry(apiUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-
-          if (!response.ok) {
-            throw new Error(
-              `API request failed with status ${response.status}`,
-            );
-          }
-
-          const result = await response.json();
-          if (
-            result.candidates &&
-            result.candidates.length > 0 &&
-            result.candidates[0].content &&
-            result.candidates[0].content.parts &&
-            result.candidates[0].content.parts.length > 0
-          ) {
-            const text = result.candidates[0].content.parts[0].text;
-            modalContent.innerHTML = text
-              .replace(/```([\s\S]*?)```/g, "<pre>$1</pre>")
-              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-          } else {
-            throw new Error("Resposta da API inválida.");
-          }
-        } catch (error) {
-          modalContent.textContent =
-            "Desculpe, não foi possível obter a explicação. Tente novamente mais tarde.";
-        }
+    const updateThemeIcons = (isDark) => {
+      if (isDark) {
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+      } else {
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
       }
+    };
 
-      async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
-        for (let i = 0; i < retries; i++) {
-          try {
-            return await fetch(url, options);
-          } catch (error) {
-            if (i === retries - 1) throw error;
-            await new Promise((res) => setTimeout(res, delay * Math.pow(2, i)));
-          }
+    const renderCommands = () => {
+      const groupedCommands = commandsData.reduce((acc, cmd) => {
+        const key = `${cmd.mode}-${cmd.context}`;
+        if (!acc[key]) {
+          acc[key] = {
+            mode: cmd.mode,
+            context: cmd.context,
+            commands: []
+          };
         }
-      }
+        acc[key].commands.push(cmd);
+        return acc;
+      }, {});
 
-      function createCard(cmd, isPlugin = false) {
-        const card = document.createElement("div");
-        card.className =
-          "card bg-white dark:bg-stone-800 p-4 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700 flex flex-col items-center text-center";
+      const filteredGroups = Object.values(groupedCommands).filter(group => {
+        const modeMatch = currentMode === 'all' || group.mode === currentMode;
+        if (!modeMatch) return false;
 
-        let cardContent = `
-                <code class="fira-code text-lg font-semibold text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900/50 px-3 py-1 rounded-md mb-3">${cmd.key.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>
-                <p class="text-sm text-stone-600 dark:text-stone-400 leading-snug flex-grow mb-4">${cmd.desc}</p>
-                <button data-key="${cmd.key}" data-desc="${cmd.desc}" class="explain-btn mt-auto text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 py-1 px-3 rounded-full hover:bg-green-200 dark:hover:bg-green-800/70">✨ Explicar Comando</button>
-            `;
-
-        if (isPlugin) {
-          card.innerHTML = `
-                    <div class="flex items-center w-full mb-4">
-                        <code class="fira-code text-base font-semibold text-green-800 bg-green-100 dark:text-green-300 dark:bg-green-900/50 px-3 py-1 rounded-md mr-4">${cmd.key.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code>
-                        <p class="text-sm text-stone-700 dark:text-stone-300 text-left flex-grow">${cmd.desc}</p>
-                    </div>
-                    <button data-key="${cmd.key}" data-desc="${cmd.desc}" class="explain-btn mt-auto text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300 py-1 px-3 rounded-full hover:bg-green-200 dark:hover:bg-green-800/70">✨ Explicar Comando</button>
-                `;
-          card.classList.remove("text-center");
+        if (currentSearch) {
+          group.filteredCommands = group.commands.filter(cmd =>
+            cmd.command.toLowerCase().includes(currentSearch) ||
+            cmd.description.toLowerCase().includes(currentSearch) ||
+            (cmd.example && cmd.example.toLowerCase().includes(currentSearch))
+          );
+          return group.filteredCommands.length > 0;
         } else {
-          card.innerHTML = cardContent;
-        }
-
-        return card;
-      }
-
-      function renderCommands() {
-        commandsGrid.innerHTML = "";
-        const filteredCommands = commandsData.filter((cmd) => {
-          if (cmd.mode !== state.mode) return false;
-          if (
-            state.mode === "normal" &&
-            state.level !== "all" &&
-            cmd.level != state.level
-          )
-            return false;
+          group.filteredCommands = group.commands;
           return true;
-        });
-        filteredCommands.forEach((cmd) =>
-          commandsGrid.appendChild(createCard(cmd)),
-        );
-      }
-
-      function renderPluginKeybinds() {
-        pluginGrid.innerHTML = "";
-        const filteredBinds = pluginKeybinds.filter(
-          (bind) => bind.plugin === state.plugin,
-        );
-        filteredBinds.forEach((bind) =>
-          pluginGrid.appendChild(createCard(bind, true)),
-        );
-      }
-
-      function updateUI() {
-        document
-          .querySelectorAll("#main-nav .nav-btn")
-          .forEach(
-            (btn) => (btn.dataset.active = btn.dataset.mode === state.mode),
-          );
-        const isNormalMode = state.mode === "normal";
-        subNavContainer.style.display = isNormalMode ? "block" : "none";
-        if (isNormalMode) {
-          document
-            .querySelectorAll("#sub-nav-normal .sub-nav-btn")
-            .forEach(
-              (btn) => (btn.dataset.active = btn.dataset.level == state.level),
-            );
         }
-        introTitle.textContent = introContent[state.mode].title;
-        introText.textContent = introContent[state.mode].text;
-        document
-          .querySelectorAll(".plugin-nav-btn")
-          .forEach(
-            (btn) => (btn.dataset.active = btn.dataset.plugin === state.plugin),
-          );
+      });
+
+      commandsContainer.innerHTML = '';
+
+      if (filteredGroups.length === 0) {
+        noResults.classList.remove('hidden');
+      } else {
+        noResults.classList.add('hidden');
+      }
+
+      filteredGroups.sort((a, b) => a.context.localeCompare(b.context)).forEach(group => {
+        const card = document.createElement('div');
+        card.className = 'bg-white dark:bg-zinc-800 rounded-xl shadow-lg p-6 flex flex-col transition-colors duration-300';
+
+        const commandsHTML = group.filteredCommands.map(cmd => {
+          let commandText = cmd.command.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          let descriptionText = cmd.description.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          let exampleText = cmd.example ? cmd.example.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+
+          if (currentSearch) {
+            const regex = new RegExp(`(${currentSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            commandText = commandText.replace(regex, `<span class="command-highlight">$1</span>`);
+            descriptionText = descriptionText.replace(regex, `<span class="command-highlight">$1</span>`);
+            if (exampleText) exampleText = exampleText.replace(regex, `<span class="command-highlight">$1</span>`);
+          }
+
+          const exampleHTML = cmd.example ? `
+                        <div class="mt-3 pt-3 border-t border-stone-200 dark:border-zinc-700">
+                            <p class="text-sm text-stone-600 dark:text-stone-400">
+                                <span class="font-semibold text-stone-700 dark:text-stone-300">Exemplo:</span> ${exampleText}
+                            </p>
+                        </div>
+                    ` : '';
+
+          return `
+                        <div class="py-4 border-b border-stone-200 dark:border-zinc-700 last:border-b-0">
+                            <div class="flex flex-col sm:flex-row sm:items-start">
+                                <code class="font-mono text-sm text-zinc-700 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 py-1 px-2 rounded-md w-full sm:w-48 shrink-0 mb-2 sm:mb-0">${commandText}</code>
+                                <p class="text-stone-700 dark:text-stone-300 text-sm sm:ml-4">${descriptionText}</p>
+                            </div>
+                            ${exampleHTML}
+                        </div>
+                    `;
+        }).join('');
+
+        card.innerHTML = `
+                    <h2 class="text-xl font-semibold mb-2 text-zinc-800 dark:text-zinc-100">${group.context}</h2>
+                    <div class="flex-grow">
+                        ${commandsHTML}
+                    </div>
+                `;
+        commandsContainer.appendChild(card);
+      });
+    };
+
+    filterNav.addEventListener('click', (e) => {
+      if (e.target.classList.contains('filter-btn')) {
+        currentMode = e.target.dataset.mode;
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active-filter'));
+        e.target.classList.add('active-filter');
         renderCommands();
-        renderPluginKeybinds();
       }
+    });
 
-      function applyTheme(theme) {
-        if (theme === "dark") {
-          document.documentElement.classList.add("dark");
-          lightIcon.classList.remove("hidden");
-          darkIcon.classList.add("hidden");
-        } else {
-          document.documentElement.classList.remove("dark");
-          lightIcon.classList.add("hidden");
-          darkIcon.classList.remove("hidden");
-        }
+    searchInput.addEventListener('input', (e) => {
+      currentSearch = e.target.value.toLowerCase();
+      renderCommands();
+    });
+
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      updateThemeIcons(isDark);
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+        updateThemeIcons(true);
+      } else {
+        updateThemeIcons(false);
       }
+      renderCommands();
+    });
+  </script>
+</body>
 
-      themeToggle.addEventListener("click", () => {
-        const newTheme = document.documentElement.classList.contains("dark")
-          ? "light"
-          : "dark";
-        localStorage.setItem("theme", newTheme);
-        applyTheme(newTheme);
-      });
-
-      mainNav.addEventListener("click", (e) => {
-        if (e.target.matches("button")) {
-          state.mode = e.target.dataset.mode;
-          state.level = "all";
-          updateUI();
-        }
-      });
-      subNavNormal.addEventListener("click", (e) => {
-        if (e.target.matches("button")) {
-          state.level = e.target.dataset.level;
-          updateUI();
-        }
-      });
-      pluginNav.addEventListener("click", (e) => {
-        if (e.target.matches("button")) {
-          state.plugin = e.target.dataset.plugin;
-          updateUI();
-        }
-      });
-
-      document.body.addEventListener("click", (e) => {
-        if (e.target.classList.contains("explain-btn")) {
-          const key = e.target.dataset.key;
-          const desc = e.target.dataset.desc;
-          getExplanation(key, desc);
-        }
-      });
-
-      modalClose.addEventListener(
-        "click",
-        () => (modal.style.display = "none"),
-      );
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-          modal.style.display = "none";
-        }
-      });
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const savedTheme =
-          localStorage.getItem("theme") ||
-          (window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light");
-        applyTheme(savedTheme);
-        updateUI();
-      });
-    </script>
-  </body>
 </html>
