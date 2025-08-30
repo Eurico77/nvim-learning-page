@@ -38,6 +38,45 @@
       background-color: #78350f;
       /* amber-900 */
     }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card-fade-in {
+      animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    .orientation-header {
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      /* text-sm */
+      font-weight: 600;
+      /* font-semibold */
+      color: #a1a1aa;
+      /* zinc-400 */
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #e5e7eb;
+      /* stone-200 */
+      padding-bottom: 0.25rem;
+    }
+
+    html.dark .orientation-header {
+      color: #71717a;
+      /* zinc-500 */
+      border-bottom-color: #3f3f46;
+      /* zinc-700 */
+    }
   </style>
 </head>
 
@@ -48,7 +87,7 @@
       <h1 class="text-3xl md:text-4xl font-bold text-zinc-800 dark:text-zinc-100">Guia Interativo de Atalhos Neovim</h1>
       <p class="text-stone-600 dark:text-stone-400 mt-2">Seu documento vivo para dominar o Neovim. Filtre por modo ou
         pesquise para encontrar comandos.</p>
-      <button id="theme-toggle"
+      <button id="theme-toggle" aria-label="Alternar tema de cores"
         class="absolute top-0 right-0 p-2 rounded-full text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-zinc-700 transition-colors">
         <svg id="theme-icon-sun" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
           stroke="currentColor" class="w-6 h-6">
@@ -66,13 +105,23 @@
     <div class="sticky top-0 bg-stone-100/80 dark:bg-zinc-900/80 backdrop-blur-sm py-4 z-10 mb-8">
       <div class="flex flex-col md:flex-row gap-4">
         <div class="relative flex-grow">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="w-5 h-5 text-stone-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke-width="1.5" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+          </div>
           <input type="text" id="searchInput" placeholder="Pesquisar comando ou descrição..."
-            class="w-full p-3 pl-10 border border-stone-300 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500 transition bg-white dark:bg-zinc-800 text-stone-800 dark:text-stone-200">
-          <svg class="w-5 h-5 text-stone-400 absolute top-1/2 left-3 -translate-y-1/2"
-            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-          </svg>
+            class="w-full p-3 pl-10 pr-10 border border-stone-300 dark:border-zinc-600 rounded-lg focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500 transition bg-white dark:bg-zinc-800 text-stone-800 dark:text-stone-200">
+          <button id="clearSearchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center hidden"
+            aria-label="Limpar busca">
+            <svg class="w-5 h-5 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
         <nav id="filter-nav" class="flex flex-wrap gap-2 justify-center">
           <button data-mode="all"
@@ -89,7 +138,7 @@
       </div>
     </div>
 
-    <main id="commands-container" class="space-y-6">
+    <main id="commands-container" class="space-y-6" aria-live="polite">
     </main>
 
     <div id="no-results" class="text-center py-12 hidden">
@@ -101,33 +150,56 @@
 
   <script>
     const commandsData = [
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`h`, `j`, `k`, `l`', description: 'Move o cursor para esquerda, baixo, cima e direita.', example: 'Use `j` para descer uma linha ou `10j` para descer 10 linhas de uma vez. O mesmo vale para `h`, `k`, `l`.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`w`', description: '**(word)** Avança o cursor para o início da próxima palavra.', example: 'Em uma linha com `const nome = "valor"`, posicione o cursor no início. Pressione `w` 3 vezes para pular para `"valor"`. Use `b` para voltar palavra por palavra.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`b`', description: '**(backward)** Volta o cursor para o início da palavra anterior.', example: 'Se você avançou com `w` e passou do ponto, pressione `b` para retornar à palavra anterior sem precisar usar as setas.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`e`', description: '**(end)** Move o cursor para o final da palavra atual.', example: 'Para adicionar algo no final de uma palavra, use `e` para posicionar o cursor e `a` para entrar no modo de inserção.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`0`', description: 'Move o cursor para o início da linha (coluna 0).', example: 'Use `0` para ir ao início absoluto da linha, mesmo que haja espaços ou tabulações.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`^`', description: 'Move para o primeiro caractere não branco da linha.', example: 'Em uma linha indentada, `^` leva o cursor para o início do código, ignorando a indentação.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`$`', description: 'Move o cursor para o final da linha.', example: 'Para adicionar um ponto e vírgula no final da linha, use `$` seguido de `a` e digite `;`.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`gg`', description: '**(go)** Vai para o início do arquivo.', example: 'Precisa adicionar um `import` no topo do arquivo? Pressione `gg` para ir instantaneamente para a primeira linha.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`G`', description: '**(Go)** Vai para o final do arquivo.', example: 'Para verificar o final de um arquivo de log ou adicionar algo na última linha, use `G`.'},
-      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`50G`', description: 'Vai para a linha 50.', example: 'Se um erro aponta para a linha 123, digite `123G` para pular diretamente para ela.'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`j`, `k`', description: 'Move o cursor para baixo e para cima.', example: 'Use `j` para descer uma linha ou `10j` para descer 10 linhas. O mesmo vale para `k`.', orientation: 'vertical'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`h`, `l`', description: 'Move o cursor para esquerda e direita.', example: 'Use `l` para mover um caractere para a direita.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`w`', description: '**(word)** Avança para o início da próxima palavra.', example: 'Em `const nome = "valor"`, `w` pula de `const` para `nome` e de `nome` para `=`.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`W`', description: 'Avança para o início da próxima PALAVRA (ignora pontuação).', example: 'Em `const nome = "valor"`, `W` pula de `const` direto para `"valor"`.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`b`', description: '**(backward)** Volta para o início da palavra anterior.', example: 'Se você avançou com `w` e passou do ponto, `b` retorna à palavra anterior.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`B`', description: 'Volta para o início da PALAVRA anterior (ignora pontuação).', example: 'Similar ao `b`, mas tratando `nome="valor"` como uma única PALAVRA.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`e`', description: '**(end)** Move para o final da palavra atual.', example: 'Para adicionar algo no final de uma palavra, use `e` para posicionar o cursor e `a` para entrar no modo de inserção.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`E`', description: 'Move para o final da PALAVRA atual (ignora pontuação).', example: 'Útil para navegar rapidamente até o fim de expressões complexas.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`ge`', description: 'Move para o final da palavra anterior.', example: 'O oposto de `e`.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`gE`', description: 'Move para o final da PALAVRA anterior (ignora pontuação).', example: 'O oposto de `E`.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`0`', description: 'Move o cursor para o início da linha (coluna 0).', example: 'Use `0` para ir ao início absoluto da linha, mesmo que haja espaços ou tabulações.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`^`', description: 'Move para o primeiro caractere não branco da linha.', example: 'Em uma linha indentada, `^` leva o cursor para o início do código, ignorando a indentação.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`$`', description: 'Move o cursor para o final da linha.', example: 'Para adicionar um ponto e vírgula no final da linha, use `$` seguido de `a` e digite `;`.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`g_`', description: 'Move para o último caractere não branco da linha.', example: 'Ignora espaços em branco no final da linha.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`f{char}`', description: '**(find)** Pula para a próxima ocorrência do {char} na linha.', example: 'Use `f"` para pular para as próximas aspas na linha.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`F{char}`', description: 'Pula para a ocorrência anterior do {char} na linha.', example: 'Oposto de `f`.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`t{char}`', description: '**(till)** Pula para a posição ANTES da próxima ocorrência do {char}.', example: 'Use `t,` para posicionar o cursor antes da próxima vírgula.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`T{char}`', description: 'Pula para a posição DEPOIS da ocorrência anterior do {char}.', example: 'Oposto de `t`.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`;`', description: 'Repete o último comando `f`, `F`, `t` ou `T`.', example: 'Após usar `f"`, pressione `;` para ir para as próximas aspas.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`,`', description: 'Repete o último comando `f`, `F`, `t` ou `T` na direção oposta.', example: 'Se você usou `;` demais, `,` volta.', orientation: 'horizontal'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`gg`', description: '**(go)** Vai para o início do arquivo.', example: 'Precisa adicionar um `import` no topo do arquivo? Pressione `gg`.', orientation: 'vertical'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`G`', description: '**(Go)** Vai para o final do arquivo.', example: 'Para verificar o final de um arquivo de log ou adicionar algo na última linha, use `G`.', orientation: 'vertical'},
+      {mode: 'normal', context: 'Movimentação (Cursor)', command: '`50G`', description: 'Vai para a linha 50.', example: 'Se um erro aponta para a linha 123, digite `123G` para pular diretamente para ela.', orientation: 'vertical'},
+
+      // MELHORIA: Nova seção de Operadores
+      {mode: 'normal', context: 'Operadores (Ação + Movimento)', command: '`d`', description: '**(delete)** Apaga o texto coberto pelo movimento.', example: 'Use `dw` para apagar uma palavra, `d$` para apagar até o final da linha, ou `d2j` para apagar 3 linhas.'},
+      {mode: 'normal', context: 'Operadores (Ação + Movimento)', command: '`c`', description: '**(change)** Apaga o texto do movimento e entra no Modo de Inserção.', example: 'Use `cw` para mudar uma palavra, ou `c` para mudar até o final da linha.'},
+      {mode: 'normal', context: 'Operadores (Ação + Movimento)', command: '`y`', description: '**(yank)** Copia o texto coberto pelo movimento.', example: 'Use `yw` para copiar uma palavra, ou `y` para copiar até o final da linha.'},
+      {mode: 'normal', context: 'Operadores (Ação + Movimento)', command: '`g~`', description: 'Inverte o case (maiúsculas/minúsculas) do texto no movimento.', example: 'Use `g~w` para inverter o case de uma palavra, ou `g~g~` para a linha inteira.'},
+      {mode: 'normal', context: 'Operadores (Ação + Movimento)', command: '`gu`', description: 'Transforma o texto do movimento em minúsculas.', example: 'Use `guw` para transformar uma palavra em minúsculas, ou `gugu` para a linha.'},
+      {mode: 'normal', context: 'Operadores (Ação + Movimento)', command: '`gU`', description: 'Transforma o texto do movimento em maiúsculas.', example: 'Use `gUw` para transformar uma palavra em maiúsculas, ou `gUgU` para a linha.'},
+      {mode: 'normal', context: 'Operadores (Ação + Movimento)', command: '`zf`', description: 'Cria uma dobra (fold) no texto coberto pelo movimento.', example: 'Selecione linhas no modo Visual e use `zf`, ou `zf3j` para criar uma dobra nas próximas 3 linhas.'},
+
       {mode: 'normal', context: 'Edição (Ações)', command: '`i`', description: '**(insert)** Entra no Modo de Inserção antes do cursor.', example: 'Posicione o cursor onde quer começar a digitar e pressione `i`.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`a`', description: '**(append)** Entra no Modo de Inserção depois do cursor.', example: 'Para adicionar um caractere no final de uma palavra, posicione o cursor no último caractere e pressione `a`.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`o`', description: '**(open)** Cria uma nova linha abaixo e entra em Modo de Inserção.', example: 'É a forma mais rápida de adicionar uma nova linha de código abaixo da atual.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`O`', description: 'Cria uma nova linha acima e entra em Modo de Inserção.', example: 'Útil para adicionar uma linha de comentário ou uma declaração de variável acima da linha atual.'},
-      {mode: 'normal', context: 'Edição (Ações)', command: '`dd`', description: 'Deleta a linha inteira.', example: 'Para remover uma linha de código temporária ou um comentário, posicione o cursor em qualquer lugar da linha e pressione `dd`. A linha será recortada (você pode colá-la com `p`).'},
-      {mode: 'normal', context: 'Edição (Ações)', command: '`dw`', description: '**(delete word)** Deleta da posição do cursor até o final da palavra.', example: 'Em `const nomeVariavel = 1;`, se o cursor estiver no `n` de `nomeVariavel`, `dw` deletará a palavra inteira.'},
-      {mode: 'normal', context: 'Edição com Text Objects', command: '`ciw`', description: '**(change inside word)** Altera a palavra inteira.', example: 'Para renomear `variavel`, posicione o cursor em qualquer letra dela, digite `ciw`, o novo nome, e `Esc`.'},
-      {mode: 'normal', context: 'Edição com Text Objects', command: '`cit`', description: '**(change inside tag)** Altera o conteúdo de uma tag HTML/XML.', example: 'Em `<div>Texto antigo</div>`, posicione o cursor em "Texto antigo" e digite `cit` para apagar o texto e começar a digitar o novo.'},
-      {mode: 'normal', context: 'Edição com Text Objects', command: '`ci"`', description: '**(change inside quotes)** Altera o conteúdo dentro de aspas duplas.', example: 'Em `const nome = "valor"`, coloque o cursor em "valor" e digite `ci"` para substituir o texto.'},
-      {mode: 'normal', context: 'Edição com Text Objects', command: '`ci(`', description: '**(change inside parentheses)** Altera o conteúdo dentro de parênteses.', example: 'Em `minhaFuncao(param1, param2)`, coloque o cursor entre os parênteses e digite `ci(` para editar os parâmetros.'},
-      {mode: 'normal', context: 'Edição (Ações)', command: '`cc`', description: '**(change line)** Deleta a linha inteira e entra em Modo de Inserção.', example: 'Use `cc` para reescrever uma linha inteira do zero.'},
-      {mode: 'normal', context: 'Edição (Ações)', command: '`yy`', description: 'Copia a linha inteira.', example: 'Para duplicar uma linha, pressione `yy` para copiá-la e `p` para colá-la na linha de baixo.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`dd`', description: 'Deleta a linha inteira (atalho para `d` no movimento "linha").', example: 'Para remover uma linha, posicione o cursor nela e pressione `dd`. A linha será recortada (pode colar com `p`).'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`cc`', description: '**(change line)** Altera a linha inteira (atalho para `c`).', example: 'Use `cc` para reescrever uma linha inteira do zero.'},
+      {mode: 'normal', context: 'Edição (Ações)', command: '`yy`', description: 'Copia a linha inteira (atalho para `y`).', example: 'Para duplicar uma linha, pressione `yy` para copiá-la e `p` para colá-la na linha de baixo.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`p`', description: '**(put)** Cola o conteúdo copiado/recortado depois do cursor.', example: 'Após usar `dd` ou `yy`, mova o cursor para o local desejado e use `p` para colar.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`x`', description: 'Deleta o caractere sob o cursor.', example: 'Equivalente a pressionar "Delete", mas sem sair do Modo Normal.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`.`', description: 'Repete o último comando de alteração.', example: 'Se você alterou uma palavra com `cw`, pode ir para outra palavra e pressionar `.` para aplicar a mesma alteração.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`u`', description: '**(undo)** Desfaz a última ação.', example: 'Deletou uma linha com `dd` por engano? Pressione `u` para trazê-la de volta.'},
       {mode: 'normal', context: 'Edição (Ações)', command: '`Ctrl + r`', description: '**(redo)** Refaz a última ação desfeita.', example: 'Se você desfez algo com `u` mas se arrependeu, `Ctrl + r` refaz a ação.'},
+      {mode: 'normal', context: 'Edição com Text Objects', command: '`ciw`', description: '**(change inside word)** Altera a palavra inteira.', example: 'Para renomear `variavel`, posicione o cursor nela, digite `ciw`, o novo nome, e `Esc`.'},
+      {mode: 'normal', context: 'Edição com Text Objects', command: '`cit`', description: '**(change inside tag)** Altera o conteúdo de uma tag HTML/XML.', example: 'Em `<div>Texto antigo</div>`, posicione o cursor em "Texto antigo" e digite `cit` para apagar e começar a digitar.'},
+      {mode: 'normal', context: 'Edição com Text Objects', command: '`ci"`', description: '**(change inside quotes)** Altera o conteúdo dentro de aspas duplas.', example: 'Em `const nome = "valor"`, coloque o cursor em "valor" e digite `ci"` para substituir o texto.'},
+      {mode: 'normal', context: 'Edição com Text Objects', command: '`ci(`', description: '**(change inside parentheses)** Altera o conteúdo dentro de parênteses.', example: 'Em `minhaFuncao(p1, p2)`, coloque o cursor entre os parênteses e digite `ci(` para editar os parâmetros.'},
+
       {mode: 'normal', context: 'Busca e Substituição', command: '`/texto`', description: 'Inicia uma busca para frente por "texto".', example: 'Digite `/useState` e pressione Enter para encontrar a próxima ocorrência do hook no seu componente React.'},
       {mode: 'normal', context: 'Busca e Substituição', command: '`n`', description: '**(next)** Pula para a próxima ocorrência da busca.', example: 'Após buscar por uma palavra, continue pressionando `n` para navegar por todas as ocorrências.'},
       {mode: 'normal', context: 'Busca e Substituição', command: '`*`', description: 'Busca pela palavra que está sob o cursor.', example: 'Coloque o cursor sobre o nome de uma função e pressione `*` para destacar todas as suas ocorrências no arquivo. Use `n` para pular para a próxima.'},
@@ -147,6 +219,7 @@
 
     const commandsContainer = document.getElementById('commands-container');
     const searchInput = document.getElementById('searchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
     const filterNav = document.getElementById('filter-nav');
     const noResults = document.getElementById('no-results');
     const themeToggle = document.getElementById('theme-toggle');
@@ -205,47 +278,97 @@
         noResults.classList.add('hidden');
       }
 
-      filteredGroups.sort((a, b) => a.context.localeCompare(b.context)).forEach(group => {
+      const modeColors = {
+        normal: 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-300',
+        insert: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300',
+        visual: 'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-300',
+        plugins: 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
+      };
+
+      const generateCommandHTML = (cmd) => {
+        let commandText = cmd.command.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        let descriptionText = cmd.description.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        let exampleText = cmd.example ? cmd.example.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+
+        if (currentSearch) {
+          const regex = new RegExp(`(${currentSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+          commandText = commandText.replace(regex, `<span class="command-highlight">$1</span>`);
+          descriptionText = descriptionText.replace(regex, `<span class="command-highlight">$1</span>`);
+          if (exampleText) exampleText = exampleText.replace(regex, `<span class="command-highlight">$1</span>`);
+        }
+
+        const cleanCommand = cmd.command.replace(/`/g, '').replace('{char}', '');
+
+        const exampleHTML = cmd.example ? `
+          <div class="mt-3 pt-3 border-t border-stone-200 dark:border-zinc-700">
+              <p class="text-sm text-stone-600 dark:text-stone-400">
+                  <span class="font-semibold text-stone-700 dark:text-stone-300">Exemplo:</span> ${exampleText}
+              </p>
+          </div>` : '';
+
+        return `
+          <div class="py-4 border-b border-stone-200 dark:border-zinc-700 last:border-b-0">
+              <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+                  <code class="font-mono text-sm text-zinc-700 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 py-1 px-2 rounded-md w-full sm:w-auto sm:min-w-[150px] shrink-0 text-center sm:text-left">${commandText}</code>
+                  <p class="text-stone-700 dark:text-stone-300 text-sm flex-grow">${descriptionText}</p>
+                  <button class="copy-btn group relative shrink-0" data-command="${cleanCommand}" aria-label="Copiar comando ${cleanCommand}">
+                       <span class="absolute -top-8 -left-1/2 transform translate-x-1/4 w-auto min-w-max px-2 py-1 bg-zinc-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity">Copiar</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-stone-500 dark:text-stone-400 hover:text-zinc-800 dark:hover:text-zinc-100 transition-colors">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                      </svg>
+                  </button>
+              </div>
+              ${exampleHTML}
+          </div>`;
+      };
+
+      const sortedGroups = Object.values(filteredGroups).sort((a, b) => {
+        const order = ['Movimentação (Cursor)', 'Operadores (Ação + Movimento)', 'Edição (Ações)'];
+        const indexA = order.indexOf(a.context);
+        const indexB = order.indexOf(b.context);
+
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        return a.context.localeCompare(b.context);
+      });
+
+      sortedGroups.forEach(group => {
         const card = document.createElement('div');
-        card.className = 'bg-white dark:bg-zinc-800 rounded-xl shadow-lg p-6 flex flex-col transition-colors duration-300';
+        card.className = 'bg-white dark:bg-zinc-800 rounded-xl shadow-lg p-6 flex flex-col transition-colors duration-300 card-fade-in hover:shadow-xl dark:hover:shadow-zinc-700/50';
 
-        const commandsHTML = group.filteredCommands.map(cmd => {
-          let commandText = cmd.command.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          let descriptionText = cmd.description.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          let exampleText = cmd.example ? cmd.example.replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+        const horizontalCommands = group.filteredCommands.filter(c => c.orientation === 'horizontal');
+        const verticalCommands = group.filteredCommands.filter(c => c.orientation === 'vertical');
+        const otherCommands = group.filteredCommands.filter(c => !c.orientation);
 
-          if (currentSearch) {
-            const regex = new RegExp(`(${currentSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-            commandText = commandText.replace(regex, `<span class="command-highlight">$1</span>`);
-            descriptionText = descriptionText.replace(regex, `<span class="command-highlight">$1</span>`);
-            if (exampleText) exampleText = exampleText.replace(regex, `<span class="command-highlight">$1</span>`);
+        let commandsHTML = '';
+
+        if (horizontalCommands.length > 0) {
+          commandsHTML += `<h3 class="orientation-header">Na Horizontal</h3>`;
+          commandsHTML += horizontalCommands.map(generateCommandHTML).join('');
+        }
+        if (verticalCommands.length > 0) {
+          commandsHTML += `<h3 class="orientation-header">Na Vertical</h3>`;
+          commandsHTML += verticalCommands.map(generateCommandHTML).join('');
+        }
+        if (otherCommands.length > 0) {
+          if (horizontalCommands.length > 0 || verticalCommands.length > 0) {
+            commandsHTML += `<h3 class="orientation-header">Outros</h3>`;
           }
+          commandsHTML += otherCommands.map(generateCommandHTML).join('');
+        }
 
-          const exampleHTML = cmd.example ? `
-                        <div class="mt-3 pt-3 border-t border-stone-200 dark:border-zinc-700">
-                            <p class="text-sm text-stone-600 dark:text-stone-400">
-                                <span class="font-semibold text-stone-700 dark:text-stone-300">Exemplo:</span> ${exampleText}
-                            </p>
-                        </div>
-                    ` : '';
-
-          return `
-                        <div class="py-4 border-b border-stone-200 dark:border-zinc-700 last:border-b-0">
-                            <div class="flex flex-col sm:flex-row sm:items-start">
-                                <code class="font-mono text-sm text-zinc-700 dark:text-zinc-200 bg-zinc-100 dark:bg-zinc-700 py-1 px-2 rounded-md w-full sm:w-48 shrink-0 mb-2 sm:mb-0">${commandText}</code>
-                                <p class="text-stone-700 dark:text-stone-300 text-sm sm:ml-4">${descriptionText}</p>
-                            </div>
-                            ${exampleHTML}
-                        </div>
-                    `;
-        }).join('');
+        const modeName = group.mode.charAt(0).toUpperCase() + group.mode.slice(1);
 
         card.innerHTML = `
-                    <h2 class="text-xl font-semibold mb-2 text-zinc-800 dark:text-zinc-100">${group.context}</h2>
-                    <div class="flex-grow">
-                        ${commandsHTML}
-                    </div>
-                `;
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">${group.context}</h2>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full ${modeColors[group.mode] || ''}">${modeName}</span>
+            </div>
+            <div class="flex-grow">
+                ${commandsHTML}
+            </div>
+        `;
         commandsContainer.appendChild(card);
       });
     };
@@ -261,13 +384,39 @@
 
     searchInput.addEventListener('input', (e) => {
       currentSearch = e.target.value.toLowerCase();
+      clearSearchBtn.classList.toggle('hidden', !currentSearch);
       renderCommands();
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      currentSearch = '';
+      clearSearchBtn.classList.add('hidden');
+      renderCommands();
+      searchInput.focus();
     });
 
     themeToggle.addEventListener('click', () => {
       const isDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', isDark ? 'dark' : 'light');
       updateThemeIcons(isDark);
+    });
+
+    commandsContainer.addEventListener('click', (e) => {
+      const copyBtn = e.target.closest('.copy-btn');
+      if (copyBtn) {
+        const commandToCopy = copyBtn.dataset.command;
+        navigator.clipboard.writeText(commandToCopy).then(() => {
+          const tooltip = copyBtn.querySelector('span');
+          const originalText = tooltip.textContent;
+          tooltip.textContent = 'Copiado!';
+          setTimeout(() => {
+            tooltip.textContent = originalText;
+          }, 1500);
+        }).catch(err => {
+          console.error('Falha ao copiar: ', err);
+        });
+      }
     });
 
     document.addEventListener('DOMContentLoaded', () => {
