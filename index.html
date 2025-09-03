@@ -784,7 +784,6 @@
           example:
             "Pressione `V`, depois `j` algumas vezes para selecionar várias linhas e `d` para deletá-las de uma vez.",
         },
-        // MELHORIA: Nova seção de Seleção Avançada
         {
           mode: "visual",
           context: "Seleção Avançada (Modo Visual)",
@@ -842,9 +841,10 @@
           example:
             "Se um bloco de código está indentado demais, selecione-o e pressione `<` para corrigir.",
         },
+
         {
           mode: "plugins",
-          context: "nvim-surround",
+          context: "Plugins (nvim-surround)",
           command: "`cs\"'`",
           description:
             "**(change surrounding)** Muda as aspas duplas para aspas simples.",
@@ -853,12 +853,385 @@
         },
         {
           mode: "plugins",
-          context: "nvim-surround",
+          context: "Plugins (nvim-surround)",
           command: "`ysiw)`",
           description:
             "**(you surround inside word)** Envolve a palavra atual com parênteses.",
           example:
             "Na palavra `variavel`, posicione o cursor sobre ela e digite `ysiw)` para transformá-la em `(variavel)`.",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Plugins Instalados",
+          command: "Lista de Plugins",
+          description:
+            "Plugins gerenciados com lazy.nvim, baseados no arquivo `lazy-lock.json`.",
+          example: `<ul class="list-disc list-inside grid grid-cols-2 md:grid-cols-3 gap-x-4 text-sm">
+                    <li>Comment.nvim</li> <li>LuaSnip</li> <li>better-escape.nvim</li> <li>blink.download</li> <li>blink.pairs</li> <li>bufferline.nvim</li> <li>cmp-buffer</li> <li>cmp-nvim-lsp</li> <li>cmp-path</li> <li>cmp_luasnip</li> <li>conform.nvim</li> <li>dial.nvim</li> <li>diffview.nvim</li> <li>dropbar.nvim</li> <li>fidget.nvim</li> <li>fine-cmdline.nvim</li> <li>flash.nvim</li> <li>fzf-lua</li> <li>gitsigns.nvim</li> <li>guess-indent.nvim</li> <li>incline.nvim</li> <li>indent-blankline.nvim</li> <li>kanso.nvim</li> <li>lazy.nvim</li> <li>live-server-nvim</li> <li>lualine.nvim</li> <li>mason-conform.nvim</li> <li>mason-lspconfig.nvim</li> <li>mason.nvim</li> <li>mini.surround</li> <li>neo-tree.nvim</li> <li>neodev.nvim</li> <li>nui.nvim</li> <li>nvim-cmp</li> <li>nvim-colorizer.lua</li> <li>nvim-lspconfig</li> <li>nvim-treesitter</li> <li>nvim-web-devicons</li> <li>plenary.nvim</li> <li>snacks.nvim</li> <li>telescope.nvim</li> <li>trouble.nvim</li> <li>which-key.nvim</li> <li>yazi.nvim</li> <li>zen-mode.nvim</li>
+                  </ul>`,
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (init.lua)",
+          command: "`<C-h>`",
+          description: "Mover para a janela à esquerda",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (init.lua)",
+          command: "`<C-l>`",
+          description: "Mover para a janela à direita",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (init.lua)",
+          command: "`<C-j>`",
+          description: "Mover para a janela abaixo",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (init.lua)",
+          command: "`<C-k>`",
+          description: "Mover para a janela acima",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (init.lua)",
+          command: "`<leader>s`",
+          description: "Ligar/Desligar corretor ortográfico",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (init.lua)",
+          command: "`<leader>ltd`",
+          description: "Toggle diagnostic hints",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<C-s>`",
+          description: "Salvar arquivo",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<leader>qa`",
+          description: "Sair do nvim",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<Up>`",
+          description: "Seta para Cima Desativada",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<Down>`",
+          description: "Seta para Baixo Desativada",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<Left>`",
+          description: "Seta para Esquerda Desativada",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<Right>`",
+          description: "Seta para Direita Desativada",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<leader>so`",
+          description: "Ativar/Desativar Corretor",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`:`",
+          description: "Abrir linha de comando (FineCmdline)",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<Tab>`",
+          description: "Próximo buffer",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<S-Tab>`",
+          description: "Buffer anterior",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<leader>sv`",
+          description: "Split vertical",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<leader>sh`",
+          description: "Split horizontal",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<A-j>`",
+          description: "Mover linha para baixo",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<A-k>`",
+          description: "Mover linha para cima",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (keymaps.lua)",
+          command: "`<leader>bd`",
+          description: "Fechar buffer",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`]h`",
+          description: "Jump to next git hunk",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`[h`",
+          description: "Jump to previous git hunk",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gs`",
+          description: "Stage git hunk",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gr`",
+          description: "Reset git hunk",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gS`",
+          description: "Git Stage buffer",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gR`",
+          description: "Git Reset buffer",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gp`",
+          description: "Git preview hunk",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gb`",
+          description: "Git blame line",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gB`",
+          description: "Git blame",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>ge`",
+          description: "Git show deleted",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gt`",
+          description: "Git toggle show blame line",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (gitsigns.lua)",
+          command: "`<leader>gi`",
+          description: "Git toggle inline diff",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (neo-tree.lua)",
+          command: "`<leader>te`",
+          description: "Toggle/Focus Neo-tree",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (neo-tree.lua)",
+          command: "`<leader>]`",
+          description: "Increase Neo-tree size",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (neo-tree.lua)",
+          command: "`<leader>[`",
+          description: "Decrease Neo-tree size",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (zen-mode.lua)",
+          command: "`<leader>tz`",
+          description: "Zen Mode",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (telescope.lua)",
+          command: "`<leader>ff`",
+          description: "Find Files",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (telescope.lua)",
+          command: "`<leader>fg`",
+          description: "Live Grep",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (telescope.lua)",
+          command: "`<leader>fb`",
+          description: "Find Buffers",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (telescope.lua)",
+          command: "`<leader>fh`",
+          description: "Help Tags",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (dial.lua)",
+          command: "`<C-a>`",
+          description: "Increment",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (dial.lua)",
+          command: "`<C-x>`",
+          description: "Decrement",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (dial.lua)",
+          command: "`g<C-a>`",
+          description: "Group Increment",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (dial.lua)",
+          command: "`g<C-x>`",
+          description: "Group Decrement",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (lsp.lua)",
+          command: "`<leader>lr`",
+          description: "[R]ename",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (lsp.lua)",
+          command: "`<leader>ca`",
+          description: "[C]ode [A]ction",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (lsp.lua)",
+          command: "`gd`",
+          description: "[G]oto [D]efinition",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (lsp.lua)",
+          command: "`gr`",
+          description: "[G]oto [R]eferences",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (lsp.lua)",
+          command: "`gI`",
+          description: "[G]oto [I]mplementation",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (lsp.lua)",
+          command: "`K`",
+          description: "Hover Documentation",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (diffview.lua)",
+          command: "`<leader>dv`",
+          description: "DiffViewOpen",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (diffview.lua)",
+          command: "`<leader>dc`",
+          description: "DiffViewClose",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (diffview.lua)",
+          command: "`<leader>dh`",
+          description: "DiffViewFileHistory",
+        },
+
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Atalhos (formatter.lua)",
+          command: "`<leader>vF`",
+          description: "Format buffer",
+        },
+        {
+          mode: "plugins",
+          context: "Minhas Configs: Mapeamentos Ativos",
+          command: "Saída de :map",
+          description:
+            "Lista completa de atalhos ativos na sessão, incluindo nativos e de plugins.",
+          example: `
+          <pre class="w-full bg-stone-50 dark:bg-zinc-900 p-4 rounded-lg overflow-x-auto text-xs"><code>
+n  &lt;Tab&gt;       * &lt;Cmd&gt;bnext&lt;CR&gt;
+                 Next buffer
+s  &lt;Tab&gt;       * &lt;Lua 26: vim/_defaults.lua:0&gt;
+                 vim.snippet.jump if active, otherwise &lt;Tab&gt;
+n  &lt;Esc&gt;       * &lt;Cmd&gt;nohlsearch&lt;CR&gt;
+n  &lt;Space&gt;ltd  * &lt;Lua 375: ~/.config/nvim/init.lua:59&gt;
+                 Toggle diagnostic hints
+n  &lt;Space&gt;s    * &lt;Lua 128: ~/.config/nvim/init.lua:55&gt;
+                 Toggle spell checker
+n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
+                 Close buffer
+... (rest of the map output) ...
+          </code></pre>
+        `,
         },
       ];
 
@@ -946,9 +1319,7 @@
           let descriptionText = cmd.description
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;");
-          let exampleText = cmd.example
-            ? cmd.example.replace(/</g, "&lt;").replace(/>/g, "&gt;")
-            : "";
+          let exampleText = cmd.example ? cmd.example : ""; // Don't escape HTML here
 
           if (currentSearch) {
             const regex = new RegExp(
@@ -963,11 +1334,13 @@
               regex,
               `<span class="command-highlight">$1</span>`,
             );
-            if (exampleText)
+            // A bit tricky to highlight inside HTML, so we do it carefully
+            if (cmd.example && !cmd.example.includes("<")) {
               exampleText = exampleText.replace(
                 regex,
                 `<span class="command-highlight">$1</span>`,
               );
+            }
           }
 
           const cleanCommand = cmd.command
@@ -977,9 +1350,9 @@
           const exampleHTML = cmd.example
             ? `
           <div class="mt-3 pt-3 border-t border-stone-200 dark:border-zinc-700">
-              <p class="text-sm text-stone-600 dark:text-stone-400">
-                  <span class="font-semibold text-stone-700 dark:text-stone-300">Exemplo:</span> ${exampleText}
-              </p>
+              <div class="text-sm text-stone-600 dark:text-stone-400">
+                  <span class="font-semibold text-stone-700 dark:text-stone-300 block mb-2"></span> ${exampleText}
+              </div>
           </div>`
             : "";
 
@@ -1009,18 +1382,27 @@
             "Entrada no Modo",
             "Seleção Avançada (Modo Visual)",
             "Ações na Seleção",
+            "Plugins (nvim-surround)",
+            "Minhas Configs: Plugins Instalados",
           ];
-          const indexA = order.indexOf(a.context);
-          const indexB = order.indexOf(b.context);
+          let indexA = order.indexOf(a.context);
+          let indexB = order.indexOf(b.context);
 
-          if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+          if (a.context.startsWith("Minhas Configs:")) indexA = order.length;
+          if (b.context.startsWith("Minhas Configs:")) indexB = order.length;
+
+          if (indexA !== -1 && indexB !== -1) {
+            if (indexA === indexB) return a.context.localeCompare(b.context);
+            return indexA - indexB;
+          }
           if (indexA !== -1) return -1;
           if (indexB !== -1) return 1;
+
           return a.context.localeCompare(b.context);
         });
 
         sortedGroups.forEach((group) => {
-          const isCollapsible = currentMode === "all";
+          const isCollapsible = true;
           const isCollapsed =
             isCollapsible && collapsedSections.has(group.context);
 
@@ -1068,10 +1450,10 @@
         `
             : "";
 
-          const headerTag = isCollapsible ? "button" : "div";
+          const headerTag = "button";
 
           card.innerHTML = `
-            <${headerTag} class="card-header flex justify-between items-center p-6 w-full text-left ${isCollapsible ? "cursor-pointer" : ""}">
+            <${headerTag} class="card-header flex justify-between items-center p-6 w-full text-left cursor-pointer">
                 <div class="flex items-center gap-4">
                   ${chevronIcon}
                   <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">${group.context}</h2>
@@ -1138,7 +1520,7 @@
         }
 
         const cardHeader = e.target.closest(".card-header");
-        if (cardHeader && currentMode === "all") {
+        if (cardHeader) {
           const card = cardHeader.closest(".card");
           const context = card.dataset.context;
           if (collapsedSections.has(context)) {
@@ -1161,7 +1543,7 @@
         } else {
           updateThemeIcons(false);
         }
-        // Por padrão, começa com todas as seções recolhidas no modo 'Todos'
+        // Por padrão, começa com todas as seções recolhidas
         commandsData.forEach((cmd) => collapsedSections.add(cmd.context));
         renderCommands();
       });
