@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR" class="">
   <head>
     <meta charset="UTF-8" />
@@ -13,7 +13,7 @@
     />
     <style>
       body {
-        font-family: "Inter", sans-serif;
+        font-family: 'Inter', sans-serif;
       }
 
       .active-filter {
@@ -75,9 +75,7 @@
       .card-content {
         max-height: 2000px; /* Altura suficiente para o conteúdo */
         overflow: hidden;
-        transition:
-          max-height 0.5s ease-in-out,
-          padding 0.5s ease-in-out;
+        transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
       }
 
       .card.collapsed .card-content {
@@ -142,7 +140,7 @@
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
-              d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
+              d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
             />
           </svg>
         </button>
@@ -248,974 +246,975 @@
     <script>
       const commandsData = [
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`j`, `k`",
-          description: "Move o cursor para baixo e para cima.",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`j`, `k`',
+          description: 'Move o cursor para baixo e para cima.',
           example:
-            "Use `j` para descer uma linha ou `10j` para descer 10 linhas. O mesmo vale para `k`.",
-          orientation: "vertical",
+            'Use `j` para descer uma linha ou `10j` para descer 10 linhas. O mesmo vale para `k`.',
+          orientation: 'vertical',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`h`, `l`",
-          description: "Move o cursor para esquerda e direita.",
-          example: "Use `l` para mover um caractere para a direita.",
-          orientation: "horizontal",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`h`, `l`',
+          description: 'Move o cursor para esquerda e direita.',
+          example: 'Use `l` para mover um caractere para a direita.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`w`",
-          description: "**(word)** Avança para o início da próxima palavra.",
-          example:
-            'Em `const nome = "valor"`, `w` pula de `const` para `nome` e de `nome` para `=`.',
-          orientation: "horizontal",
-        },
-        {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`W`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`w`',
           description:
-            "Avança para o início da próxima PALAVRA (ignora pontuação).",
+            '**(word)** Pula para o início da próxima palavra, tratando a pontuação como "palavras".',
           example:
-            'Em `const nome = "valor"`, `W` pula de `const` direto para `"valor"`.',
-          orientation: "horizontal",
+            'Imagine a linha: `const user_name = "John";`. Com o cursor em `const`, `w` o levará para `user_name`. Pressionando `w` novamente, ele irá para `=`. Mais um `w` e ele estará em `"John"`.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`b`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`W`',
           description:
-            "**(backward)** Volta para o início da palavra anterior.",
+            'Avança para o início da próxima PALAVRA (ignora pontuação).',
           example:
-            "Se você avançou com `w` e passou do ponto, `b` retorna à palavra anterior.",
-          orientation: "horizontal",
+            'Na linha `const user-name = "John";`, com o cursor em `const`, o comando `W` pulará diretamente para `user-name` e depois para `"John"`, pois trata `user-name` como uma única "WORD".',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`B`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`b`',
           description:
-            "Volta para o início da PALAVRA anterior (ignora pontuação).",
+            '**(backward)** Volta para o início da palavra anterior.',
           example:
-            'Similar ao `b`, mas tratando `nome="valor"` como uma única PALAVRA.',
-          orientation: "horizontal",
+            'Se o cursor está em `const user_name = "John";`, pressionar `b` o moverá de volta para o início de `user_name`, e depois para `const`.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`e`",
-          description: "**(end)** Move para o final da palavra atual.",
-          example:
-            "Para adicionar algo no final de uma palavra, use `e` para posicionar o cursor e `a` para entrar no modo de inserção.",
-          orientation: "horizontal",
-        },
-        {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`E`",
-          description: "Move para o final da PALAVRA atual (ignora pontuação).",
-          example:
-            "Útil para navegar rapidamente até o fim de expressões complexas.",
-          orientation: "horizontal",
-        },
-        {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`ge`",
-          description: "Move para o final da palavra anterior.",
-          example: "O oposto de `e`.",
-          orientation: "horizontal",
-        },
-        {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`gE`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`B`',
           description:
-            "Move para o final da PALAVRA anterior (ignora pontuação).",
-          example: "O oposto de `E`.",
-          orientation: "horizontal",
-        },
-        {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`0`",
-          description: "Move o cursor para o início da linha (coluna 0).",
+            'Volta para o início da PALAVRA anterior (ignora pontuação).',
           example:
-            "Use `0` para ir ao início absoluto da linha, mesmo que haja espaços ou tabulações.",
-          orientation: "horizontal",
+            'Se o cursor estiver em `John`, o comando `B` o levará diretamente para `user-name`.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`^`",
-          description: "Move para o primeiro caractere não branco da linha.",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`e`',
+          description: '**(end)** Move para o final da palavra atual.',
           example:
-            "Em uma linha indentada, `^` leva o cursor para o início do código, ignorando a indentação.",
-          orientation: "horizontal",
+            'Na palavra `variavel`, se o cursor estiver em `v`, pressione `e` para que o cursor vá para a letra `l`.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`$`",
-          description: "Move o cursor para o final da linha.",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`E`',
+          description: 'Move para o final da PALAVRA atual (ignora pontuação).',
           example:
-            "Para adicionar um ponto e vírgula no final da linha, use `$` seguido de `a` e digite `;`.",
-          orientation: "horizontal",
+            'Útil para navegar rapidamente até o fim de expressões complexas.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`g_`",
-          description: "Move para o último caractere não branco da linha.",
-          example: "Ignora espaços em branco no final da linha.",
-          orientation: "horizontal",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`ge`',
+          description: 'Move para o final da palavra anterior.',
+          example: 'O oposto de `e`.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`f{char}`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`gE`',
           description:
-            "**(find)** Pula para a próxima ocorrência do {char} na linha.",
+            'Move para o final da PALAVRA anterior (ignora pontuação).',
+          example: 'O oposto de `E`.',
+          orientation: 'horizontal',
+        },
+        {
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`0`',
+          description: 'Move o cursor para o início da linha (coluna 0).',
+          example:
+            'Na linha `    let x = 10;`, o comando `0` leva o cursor para o primeiro espaço, no início absoluto da linha.',
+          orientation: 'horizontal',
+        },
+        {
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`^`',
+          description: 'Move para o primeiro caractere não branco da linha.',
+          example:
+            'Na linha `    let x = 10;`, o comando `^` o leva para a letra `l`, ignorando a indentação.',
+          orientation: 'horizontal',
+        },
+        {
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`$`',
+          description: 'Move o cursor para o final da linha.',
+          example:
+            'Para adicionar um ponto e vírgula no final da linha, use `$` seguido de `a` e digite `;`.',
+          orientation: 'horizontal',
+        },
+        {
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`g_`',
+          description: 'Move para o último caractere não branco da linha.',
+          example: 'Ignora espaços em branco no final da linha.',
+          orientation: 'horizontal',
+        },
+        {
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`f{char}`',
+          description:
+            '**(find)** Pula para a próxima ocorrência do {char} na linha.',
           example: 'Use `f"` para pular para as próximas aspas na linha.',
-          orientation: "horizontal",
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`F{char}`",
-          description: "Pula para a ocorrência anterior do {char} na linha.",
-          example: "Oposto de `f`.",
-          orientation: "horizontal",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`F{char}`',
+          description: 'Pula para a ocorrência anterior do {char} na linha.',
+          example: 'Oposto de `f`.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`t{char}`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`t{char}`',
           description:
-            "**(till)** Pula para a posição ANTES da próxima ocorrência do {char}.",
+            '**(till)** Pula para a posição ANTES da próxima ocorrência do {char}.',
           example:
-            "Use `t,` para posicionar o cursor antes da próxima vírgula.",
-          orientation: "horizontal",
+            'Use `t,` para posicionar o cursor antes da próxima vírgula.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`T{char}`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`T{char}`',
           description:
-            "Pula para a posição DEPOIS da ocorrência anterior do {char}.",
-          example: "Oposto de `t`.",
-          orientation: "horizontal",
+            'Pula para a posição DEPOIS da ocorrência anterior do {char}.',
+          example: 'Oposto de `t`.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`;`",
-          description: "Repete o último comando `f`, `F`, `t` ou `T`.",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`;`',
+          description: 'Repete o último comando `f`, `F`, `t` ou `T`.',
           example:
             'Após usar `f"`, pressione `;` para ir para as próximas aspas.',
-          orientation: "horizontal",
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`,`",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`,`',
           description:
-            "Repete o último comando `f`, `F`, `t` ou `T` na direção oposta.",
-          example: "Se você usou `;` demais, `,` volta.",
-          orientation: "horizontal",
+            'Repete o último comando `f`, `F`, `t` ou `T` na direção oposta.',
+          example: 'Se você usou `;` demais, `,` volta.',
+          orientation: 'horizontal',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`gg`",
-          description: "**(go)** Vai para o início do arquivo.",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`gg`',
+          description: '**(go)** Vai para o início do arquivo.',
           example:
-            "Precisa adicionar um `import` no topo do arquivo? Pressione `gg`.",
-          orientation: "vertical",
+            'Precisa adicionar um `import` no topo do arquivo? Pressione `gg`.',
+          orientation: 'vertical',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`G`",
-          description: "**(Go)** Vai para o final do arquivo.",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`G`',
+          description: '**(Go)** Vai para o final do arquivo.',
           example:
-            "Para verificar o final de um arquivo de log ou adicionar algo na última linha, use `G`.",
-          orientation: "vertical",
+            'Para verificar o final de um arquivo de log ou adicionar algo na última linha, use `G`.',
+          orientation: 'vertical',
         },
         {
-          mode: "normal",
-          context: "Movimentação (Cursor)",
-          command: "`50G`",
-          description: "Vai para a linha 50.",
+          mode: 'normal',
+          context: 'Movimentação (Cursor)',
+          command: '`50G`',
+          description: 'Vai para a linha 50.',
           example:
-            "Se um erro aponta para a linha 123, digite `123G` para pular diretamente para ela.",
-          orientation: "vertical",
+            'Se um erro aponta para a linha 123, digite `123G` para pular diretamente para ela.',
+          orientation: 'vertical',
         },
 
         {
-          mode: "normal",
-          context: "Operadores (Ação + Movimento)",
-          command: "`d`",
-          description: "**(delete)** Apaga o texto coberto pelo movimento.",
+          mode: 'normal',
+          context: 'Operadores (Ação + Movimento)',
+          command: '`d`',
+          description: '**(delete)** Apaga o texto coberto pelo movimento.',
           example:
-            "Use `dw` para apagar uma palavra, `d$` para apagar até o final da linha, ou `d2j` para apagar 3 linhas.",
+            'Use `dw` para apagar uma palavra, `d$` para apagar até o final da linha, ou `d2j` para apagar 3 linhas.',
         },
         {
-          mode: "normal",
-          context: "Operadores (Ação + Movimento)",
-          command: "`c`",
+          mode: 'normal',
+          context: 'Operadores (Ação + Movimento)',
+          command: '`c`',
           description:
-            "**(change)** Apaga o texto do movimento e entra no Modo de Inserção.",
+            '**(change)** Apaga o texto do movimento e entra no Modo de Inserção.',
           example:
-            "Use `cw` para mudar uma palavra, ou `c$` para mudar até o final da linha.",
+            'Use `cw` para mudar uma palavra, ou `c$` para mudar até o final da linha.',
         },
         {
-          mode: "normal",
-          context: "Operadores (Ação + Movimento)",
-          command: "`y`",
-          description: "**(yank)** Copia o texto coberto pelo movimento.",
+          mode: 'normal',
+          context: 'Operadores (Ação + Movimento)',
+          command: '`y`',
+          description: '**(yank)** Copia o texto coberto pelo movimento.',
           example:
-            "Use `yw` para copiar uma palavra, ou `y$` para copiar até o final da linha.",
+            'Use `yw` para copiar uma palavra, ou `y$` para copiar até o final da linha.',
         },
         {
-          mode: "normal",
-          context: "Operadores (Ação + Movimento)",
-          command: "`g~`",
+          mode: 'normal',
+          context: 'Operadores (Ação + Movimento)',
+          command: '`g~`',
           description:
-            "Inverte o case (maiúsculas/minúsculas) do texto no movimento.",
+            'Inverte o case (maiúsculas/minúsculas) do texto no movimento.',
           example:
-            "Use `g~w` para inverter o case de uma palavra, ou `g~g~` para a linha inteira.",
+            'Use `g~w` para inverter o case de uma palavra, ou `g~g~` para a linha inteira.',
         },
         {
-          mode: "normal",
-          context: "Operadores (Ação + Movimento)",
-          command: "`gu`",
-          description: "Transforma o texto do movimento em minúsculas.",
+          mode: 'normal',
+          context: 'Operadores (Ação + Movimento)',
+          command: '`gu`',
+          description: 'Transforma o texto do movimento em minúsculas.',
           example:
-            "Use `guw` para transformar uma palavra em minúsculas, ou `gugu` para a linha.",
+            'Use `guw` para transformar uma palavra em minúsculas, ou `gugu` para a linha.',
         },
         {
-          mode: "normal",
-          context: "Operadores (Ação + Movimento)",
-          command: "`gU`",
-          description: "Transforma o texto do movimento em maiúsculas.",
+          mode: 'normal',
+          context: 'Operadores (Ação + Movimento)',
+          command: '`gU`',
+          description: 'Transforma o texto do movimento em maiúsculas.',
           example:
-            "Use `gUw` para transformar uma palavra em maiúsculas, ou `gUgU` para a linha.",
+            'Use `gUw` para transformar uma palavra em maiúsculas, ou `gUgU` para a linha.',
         },
         {
-          mode: "normal",
-          context: "Operadores (Ação + Movimento)",
-          command: "`zf`",
-          description: "Cria uma dobra (fold) no texto coberto pelo movimento.",
+          mode: 'normal',
+          context: 'Operadores (Ação + Movimento)',
+          command: '`zf`',
+          description: 'Cria uma dobra (fold) no texto coberto pelo movimento.',
           example:
-            "Selecione linhas no modo Visual e use `zf`, ou `zf3j` para criar uma dobra nas próximas 3 linhas.",
+            'Selecione linhas no modo Visual e use `zf`, ou `zf3j` para criar uma dobra nas próximas 3 linhas.',
         },
 
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
-          command: "`iw` / `aw`",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
+          command: '`iw` / `aw`',
           description:
-            "`i` (inner): palavra interna. `a` (around): palavra + espaço.",
+            '`i` (inner): palavra interna. `a` (around): palavra + espaço.',
           example:
-            "Em `(uma palavra)`, `ciw` altera `palavra`. `caw` altera `palavra ` (com o espaço).",
+            'Em `(uma palavra)`, `ciw` altera `palavra`. `caw` altera `palavra ` (com o espaço).',
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
           command: '`i"` / `a"`',
           description:
-            "`i`: conteúdo DENTRO das aspas. `a`: conteúdo E as aspas.",
+            '`i`: conteúdo DENTRO das aspas. `a`: conteúdo E as aspas.',
           example: 'Em `"texto"`, `di"` apaga `texto`. `da"` apaga `"texto"`.',
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
           command: "`i'` / `a'`",
           description:
-            "`i`: conteúdo DENTRO das aspas simples. `a`: conteúdo E as aspas.",
+            '`i`: conteúdo DENTRO das aspas simples. `a`: conteúdo E as aspas.',
           example:
             "Em `'texto'`, `vi'` seleciona `texto`. `va'` seleciona `'texto'`.",
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
-          command: "`i(` ou `ib` / `a(` ou `ab`",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
+          command: '`i(` ou `ib` / `a(` ou `ab`',
           description:
-            "`i`: conteúdo DENTRO dos parênteses. `a`: conteúdo E os parênteses.",
-          example: "Em `(texto)`, `yi(` copia `texto`. `ya(` copia `(texto)`.",
+            '`i`: conteúdo DENTRO dos parênteses. `a`: conteúdo E os parênteses.',
+          example: 'Em `(texto)`, `yi(` copia `texto`. `ya(` copia `(texto)`.',
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
-          command: "`i[` / `a[`",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
+          command: '`i[` / `a[`',
           description:
-            "`i`: conteúdo DENTRO dos colchetes. `a`: conteúdo E os colchetes.",
-          example: "Em `[texto]`, `di[` apaga `texto`. `da[` apaga `[texto]`.",
+            '`i`: conteúdo DENTRO dos colchetes. `a`: conteúdo E os colchetes.',
+          example: 'Em `[texto]`, `di[` apaga `texto`. `da[` apaga `[texto]`.',
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
-          command: "`i{` ou `iB` / `a{` ou `aB`",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
+          command: '`i{` ou `iB` / `a{` ou `aB`',
           description:
-            "`i`: conteúdo DENTRO das chaves. `a`: conteúdo E as chaves.",
+            '`i`: conteúdo DENTRO das chaves. `a`: conteúdo E as chaves.',
           example:
-            "Em `{texto}`, `ci{` altera `texto`. `ca{` altera `{texto}`.",
+            'Em `{texto}`, `ci{` altera `texto`. `ca{` altera `{texto}`.',
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
-          command: "`it` / `at`",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
+          command: '`it` / `at`',
           description:
-            "`i`: conteúdo DENTRO da tag HTML/XML. `a`: conteúdo E a tag.",
+            '`i`: conteúdo DENTRO da tag HTML/XML. `a`: conteúdo E a tag.',
           example:
-            "Em `<p>texto</p>`, `cit` altera `texto`. `cat` altera `<p>texto</p>`.",
+            'Em `<p>texto</p>`, `cit` altera `texto`. `cat` altera `<p>texto</p>`.',
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
-          command: "`is` / `as`",
-          description: "`i`: sentença interna. `a`: sentença com espaço.",
-          example: "`cis` altera uma frase inteira até o ponto final.",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
+          command: '`is` / `as`',
+          description: '`i`: sentença interna. `a`: sentença com espaço.',
+          example: '`cis` altera uma frase inteira até o ponto final.',
         },
         {
-          mode: "normal",
-          context: "Text Objects (Alvos de Operação)",
-          command: "`ip` / `ap`",
+          mode: 'normal',
+          context: 'Text Objects (Alvos de Operação)',
+          command: '`ip` / `ap`',
           description:
-            "`i`: parágrafo interno. `a`: parágrafo com linha em branco.",
+            '`i`: parágrafo interno. `a`: parágrafo com linha em branco.',
           example:
-            "`yap` copia um parágrafo inteiro para colar em outro lugar.",
+            '`yap` copia um parágrafo inteiro para colar em outro lugar.',
         },
 
         {
-          mode: "normal",
-          context: "Combinações (Fluxos de Trabalho)",
-          command: "`d2l`",
-          description: "Apaga dois caracteres para a direita.",
+          mode: 'normal',
+          context: 'Combinações (Fluxos de Trabalho)',
+          command: '`d2l`',
+          description: 'Apaga dois caracteres para a direita.',
           example:
-            "Combina o operador `d` (delete) com o movimento `2l` (2 caracteres para a direita).",
+            'Combina o operador `d` (delete) com o movimento `2l` (2 caracteres para a direita).',
         },
         {
-          mode: "normal",
-          context: "Combinações (Fluxos de Trabalho)",
-          command: "`v3b`",
-          description: "Seleciona as três palavras anteriores.",
+          mode: 'normal',
+          context: 'Combinações (Fluxos de Trabalho)',
+          command: '`v3b`',
+          description: 'Seleciona as três palavras anteriores.',
           example:
-            "Combina o modo `v` (visual) com o movimento `3b` (3 palavras para trás).",
+            'Combina o modo `v` (visual) com o movimento `3b` (3 palavras para trás).',
         },
         {
-          mode: "normal",
-          context: "Combinações (Fluxos de Trabalho)",
-          command: "`gU3w`",
-          description: "Transforma as 3 próximas palavras em maiúsculas.",
+          mode: 'normal',
+          context: 'Combinações (Fluxos de Trabalho)',
+          command: '`gU3w`',
+          description: 'Transforma as 3 próximas palavras em maiúsculas.',
           example:
-            "Combina `gU` (operador maiúscula) com o movimento `3w` (3 palavras para frente).",
+            'Combina `gU` (operador maiúscula) com o movimento `3w` (3 palavras para frente).',
         },
         {
-          mode: "normal",
-          context: "Combinações (Fluxos de Trabalho)",
-          command: "`^vg_`",
+          mode: 'normal',
+          context: 'Combinações (Fluxos de Trabalho)',
+          command: '`^vg_`',
           description:
-            "Seleciona o conteúdo da linha, ignorando indentações e espaços.",
-          example: "`^` (início do texto), `v` (visual), `g_` (fim do texto).",
+            'Seleciona o conteúdo da linha, ignorando indentações e espaços.',
+          example: '`^` (início do texto), `v` (visual), `g_` (fim do texto).',
         },
         {
-          mode: "normal",
-          context: "Combinações (Fluxos de Trabalho)",
-          command: "`>i{`",
-          description: "Indenta o bloco de código DENTRO das chaves.",
+          mode: 'normal',
+          context: 'Combinações (Fluxos de Trabalho)',
+          command: '`>i{`',
+          description: 'Indenta o bloco de código DENTRO das chaves.',
           example:
-            "Com o cursor dentro de um `{...}`, `>i{` indenta todo o conteúdo.",
+            'Com o cursor dentro de um `{...}`, `>i{` indenta todo o conteúdo.',
         },
 
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`i`",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`i`',
           description:
-            "**(insert)** Entra no Modo de Inserção antes do cursor.",
+            '**(insert)** Entra no Modo de Inserção antes do cursor.',
           example:
-            "Posicione o cursor onde quer começar a digitar e pressione `i`.",
+            'Posicione o cursor onde quer começar a digitar e pressione `i`.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`a`",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`a`',
           description:
-            "**(append)** Entra no Modo de Inserção depois do cursor.",
+            '**(append)** Entra no Modo de Inserção depois do cursor.',
           example:
-            "Para adicionar um caractere no final de uma palavra, posicione o cursor no último caractere e pressione `a`.",
+            'Para adicionar um caractere no final de uma palavra, posicione o cursor no último caractere e pressione `a`.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`o`",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`o`',
           description:
-            "**(open)** Cria uma nova linha abaixo e entra em Modo de Inserção.",
+            '**(open)** Cria uma nova linha abaixo e entra em Modo de Inserção.',
           example:
-            "É a forma mais rápida de adicionar uma nova linha de código abaixo da atual.",
+            'É a forma mais rápida de adicionar uma nova linha de código abaixo da atual.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`O`",
-          description: "Cria uma nova linha acima e entra em Modo de Inserção.",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`O`',
+          description: 'Cria uma nova linha acima e entra em Modo de Inserção.',
           example:
-            "Útil para adicionar uma linha de comentário ou uma declaração de variável acima da linha atual.",
+            'Útil para adicionar uma linha de comentário ou uma declaração de variável acima da linha atual.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`dd`",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`dd`',
           description:
             'Deleta a linha inteira (atalho para `d` no movimento "linha").',
           example:
-            "Para remover uma linha, posicione o cursor nela e pressione `dd`. A linha será recortada (pode colar com `p`).",
+            'Para remover uma linha, posicione o cursor nela e pressione `dd`. A linha será recortada (pode colar com `p`).',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`cc`",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`cc`',
           description:
-            "**(change line)** Altera a linha inteira (atalho para `c$`).",
-          example: "Use `cc` para reescrever uma linha inteira do zero.",
+            '**(change line)** Altera a linha inteira (atalho para `c$`).',
+          example: 'Use `cc` para reescrever uma linha inteira do zero.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`yy`",
-          description: "Copia a linha inteira (atalho para `y$`).",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`yy`',
+          description: 'Copia a linha inteira (atalho para `y$`).',
           example:
-            "Para duplicar uma linha, pressione `yy` para copiá-la e `p` para colá-la na linha de baixo.",
+            'Para duplicar uma linha, pressione `yy` para copiá-la e `p` para colá-la na linha de baixo.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`p`",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`p`',
           description:
-            "**(put)** Cola o conteúdo copiado/recortado depois do cursor.",
+            '**(put)** Cola o conteúdo copiado/recortado depois do cursor.',
           example:
-            "Após usar `dd` ou `yy`, mova o cursor para o local desejado e use `p` para colar.",
+            'Após usar `dd` ou `yy`, mova o cursor para o local desejado e use `p` para colar.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`x`",
-          description: "Deleta o caractere sob o cursor.",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`x`',
+          description: 'Deleta o caractere sob o cursor.',
           example:
             'Equivalente a pressionar "Delete", mas sem sair do Modo Normal.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`.`",
-          description: "Repete o último comando de alteração.",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`.`',
+          description: 'Repete o último comando de alteração.',
           example:
-            "Se você alterou uma palavra com `cw`, pode ir para outra palavra e pressionar `.` para aplicar a mesma alteração.",
+            'Se você alterou uma palavra com `cw`, pode ir para outra palavra e pressionar `.` para aplicar a mesma alteração.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`u`",
-          description: "**(undo)** Desfaz a última ação.",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`u`',
+          description: '**(undo)** Desfaz a última ação.',
           example:
-            "Deletou uma linha com `dd` por engano? Pressione `u` para trazê-la de volta.",
+            'Deletou uma linha com `dd` por engano? Pressione `u` para trazê-la de volta.',
         },
         {
-          mode: "normal",
-          context: "Edição (Ações)",
-          command: "`Ctrl + r`",
-          description: "**(redo)** Refaz a última ação desfeita.",
+          mode: 'normal',
+          context: 'Edição (Ações)',
+          command: '`Ctrl + r`',
+          description: '**(redo)** Refaz a última ação desfeita.',
           example:
-            "Se você desfez algo com `u` mas se arrependeu, `Ctrl + r` refaz a ação.",
+            'Se você desfez algo com `u` mas se arrependeu, `Ctrl + r` refaz a ação.',
         },
 
         {
-          mode: "normal",
-          context: "Busca e Substituição",
-          command: "`/texto`",
+          mode: 'normal',
+          context: 'Busca e Substituição',
+          command: '`/texto`',
           description: 'Inicia uma busca para frente por "texto".',
           example:
-            "Digite `/useState` e pressione Enter para encontrar a próxima ocorrência do hook no seu componente React.",
+            'Digite `/useState` e pressione Enter para encontrar a próxima ocorrência do hook no seu componente React.',
         },
         {
-          mode: "normal",
-          context: "Busca e Substituição",
-          command: "`n`",
-          description: "**(next)** Pula para a próxima ocorrência da busca.",
+          mode: 'normal',
+          context: 'Busca e Substituição',
+          command: '`n`',
+          description: '**(next)** Pula para a próxima ocorrência da busca.',
           example:
-            "Após buscar por uma palavra, continue pressionando `n` para navegar por todas as ocorrências.",
+            'Após buscar por uma palavra, continue pressionando `n` para navegar por todas as ocorrências.',
         },
         {
-          mode: "normal",
-          context: "Busca e Substituição",
-          command: "`*`",
-          description: "Busca pela palavra que está sob o cursor.",
+          mode: 'normal',
+          context: 'Busca e Substituição',
+          command: '`*`',
+          description: 'Busca pela palavra que está sob o cursor.',
           example:
-            "Coloque o cursor sobre o nome de uma função e pressione `*` para destacar todas as suas ocorrências no arquivo. Use `n` para pular para a próxima.",
+            'Coloque o cursor sobre o nome de uma função e pressione `*` para destacar todas as suas ocorrências no arquivo. Use `n` para pular para a próxima.',
         },
         {
-          mode: "insert",
-          context: "Sair do Modo",
-          command: "`Esc` ou `Ctrl + [`",
-          description: "Volta para o Modo Normal.",
+          mode: 'insert',
+          context: 'Sair do Modo',
+          command: '`Esc` ou `Ctrl + [`',
+          description: 'Volta para o Modo Normal.',
           example:
-            "Após terminar de digitar, pressione `Esc` para retornar ao modo de comandos e poder navegar ou executar outras ações.",
+            'Após terminar de digitar, pressione `Esc` para retornar ao modo de comandos e poder navegar ou executar outras ações.',
         },
 
         {
-          mode: "visual",
-          context: "Entrada no Modo",
-          command: "`v`",
-          description: "Entra no Modo Visual (seleção por caractere).",
+          mode: 'visual',
+          context: 'Entrada no Modo',
+          command: '`v`',
+          description: 'Entra no Modo Visual (seleção por caractere).',
           example:
-            "Pressione `v`, use `w` ou `l` para selecionar um trecho de texto e depois `y` para copiá-lo.",
+            'Pressione `v`, use `w` ou `l` para selecionar um trecho de texto e depois `y` para copiá-lo.',
         },
         {
-          mode: "visual",
-          context: "Entrada no Modo",
-          command: "`V`",
+          mode: 'visual',
+          context: 'Entrada no Modo',
+          command: '`V`',
           description:
-            "Entra no Modo Visual de Linha (seleção por linhas inteiras).",
+            'Entra no Modo Visual de Linha (seleção por linhas inteiras).',
           example:
-            "Pressione `V`, depois `j` algumas vezes para selecionar várias linhas e `d` para deletá-las de uma vez.",
+            'Pressione `V`, depois `j` algumas vezes para selecionar várias linhas e `d` para deletá-las de uma vez.',
         },
         {
-          mode: "visual",
-          context: "Seleção Avançada (Modo Visual)",
-          command: "`ggVG`",
-          description: "Seleciona o arquivo inteiro.",
+          mode: 'visual',
+          context: 'Seleção Avançada (Modo Visual)',
+          command: '`ggVG`',
+          description: 'Seleciona o arquivo inteiro.',
           example:
-            "Vá para o topo (`gg`), entre no modo Visual de Linha (`V`), e vá para o fim (`G`).",
+            'Vá para o topo (`gg`), entre no modo Visual de Linha (`V`), e vá para o fim (`G`).',
         },
         {
-          mode: "visual",
-          context: "Seleção Avançada (Modo Visual)",
-          command: "`ap` / `ip`",
-          description: "Seleciona um parágrafo (ao redor `a` / interno `i`).",
+          mode: 'visual',
+          context: 'Seleção Avançada (Modo Visual)',
+          command: '`ap` / `ip`',
+          description: 'Seleciona um parágrafo (ao redor `a` / interno `i`).',
           example:
-            "Com o cursor em um parágrafo, `vap` seleciona-o incluindo a linha em branco após.",
+            'Com o cursor em um parágrafo, `vap` seleciona-o incluindo a linha em branco após.',
         },
         {
-          mode: "visual",
-          context: "Seleção Avançada (Modo Visual)",
-          command: "`as` / `is`",
-          description: "Seleciona uma sentença (ao redor `a` / interno `i`).",
-          example: "`vis` seleciona a frase atual em que o cursor está.",
+          mode: 'visual',
+          context: 'Seleção Avançada (Modo Visual)',
+          command: '`as` / `is`',
+          description: 'Seleciona uma sentença (ao redor `a` / interno `i`).',
+          example: '`vis` seleciona a frase atual em que o cursor está.',
         },
         {
-          mode: "visual",
-          context: "Seleção Avançada (Modo Visual)",
-          command: "`ab` / `ib`",
+          mode: 'visual',
+          context: 'Seleção Avançada (Modo Visual)',
+          command: '`ab` / `ib`',
           description:
-            "Seleciona um bloco de `()` (ao redor `a` / interno `i`).",
-          example: "Em `func(arg1, arg2)`, `vib` seleciona `arg1, arg2`.",
+            'Seleciona um bloco de `()` (ao redor `a` / interno `i`).',
+          example: 'Em `func(arg1, arg2)`, `vib` seleciona `arg1, arg2`.',
         },
         {
-          mode: "visual",
-          context: "Seleção Avançada (Modo Visual)",
-          command: "`aB` / `iB`",
+          mode: 'visual',
+          context: 'Seleção Avançada (Modo Visual)',
+          command: '`aB` / `iB`',
           description:
-            "Seleciona um bloco de `{}` (ao redor `a` / interno `i`).",
+            'Seleciona um bloco de `{}` (ao redor `a` / interno `i`).',
           example:
-            "`vaB` seleciona todo o bloco de código, incluindo as chaves.",
+            '`vaB` seleciona todo o bloco de código, incluindo as chaves.',
         },
 
         {
-          mode: "visual",
-          context: "Ações na Seleção",
-          command: "`>`",
-          description: "Aumenta a indentação do bloco selecionado.",
+          mode: 'visual',
+          context: 'Ações na Seleção',
+          command: '`>`',
+          description: 'Aumenta a indentação do bloco selecionado.',
           example:
-            "Selecione um bloco de código com `V` e `j`/`k`, depois pressione `>` para indentá-lo.",
+            'Selecione um bloco de código com `V` e `j`/`k`, depois pressione `>` para indentá-lo.',
         },
         {
-          mode: "visual",
-          context: "Ações na Seleção",
-          command: "`<`",
-          description: "Diminui a indentação do bloco selecionado.",
+          mode: 'visual',
+          context: 'Ações na Seleção',
+          command: '`<`',
+          description: 'Diminui a indentação do bloco selecionado.',
           example:
-            "Se um bloco de código está indentado demais, selecione-o e pressione `<` para corrigir.",
-        },
-
-        {
-          mode: "plugins",
-          context: "Plugins (nvim-surround)",
-          command: "`cs\"'`",
-          description:
-            "**(change surrounding)** Muda as aspas duplas para aspas simples.",
-          example:
-            "Em um texto como `\"Olá, mundo\"`, coloque o cursor dentro das aspas e digite `cs\"'` para transformá-lo em `'Olá, mundo'`.",
-        },
-        {
-          mode: "plugins",
-          context: "Plugins (nvim-surround)",
-          command: "`ysiw)`",
-          description:
-            "**(you surround inside word)** Envolve a palavra atual com parênteses.",
-          example:
-            "Na palavra `variavel`, posicione o cursor sobre ela e digite `ysiw)` para transformá-la em `(variavel)`.",
+            'Se um bloco de código está indentado demais, selecione-o e pressione `<` para corrigir.',
         },
 
         {
-          mode: "plugins",
-          context: "Minhas Configs: Plugins Instalados",
-          command: "Lista de Plugins",
+          mode: 'plugins',
+          context: 'Plugins (nvim-surround)',
+          command: '`cs"\'`',
           description:
-            "Plugins gerenciados com lazy.nvim, baseados no arquivo `lazy-lock.json`.",
+            '**(change surrounding)** Muda as aspas duplas para aspas simples.',
+          example:
+            'Em um texto como `"Olá, mundo"`, coloque o cursor dentro das aspas e digite `cs"\'` para transformá-lo em `\'Olá, mundo\'`.',
+        },
+        {
+          mode: 'plugins',
+          context: 'Plugins (nvim-surround)',
+          command: '`ysiw)`',
+          description:
+            '**(you surround inside word)** Envolve a palavra atual com parênteses.',
+          example:
+            'Na palavra `variavel`, posicione o cursor sobre ela e digite `ysiw)` para transformá-la em `(variavel)`.',
+        },
+
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Plugins Instalados',
+          command: 'Lista de Plugins',
+          description:
+            'Plugins gerenciados com lazy.nvim, baseados no arquivo `lazy-lock.json`.',
           example: `<ul class="list-disc list-inside grid grid-cols-2 md:grid-cols-3 gap-x-4 text-sm">
                     <li>Comment.nvim</li> <li>LuaSnip</li> <li>better-escape.nvim</li> <li>blink.download</li> <li>blink.pairs</li> <li>bufferline.nvim</li> <li>cmp-buffer</li> <li>cmp-nvim-lsp</li> <li>cmp-path</li> <li>cmp_luasnip</li> <li>conform.nvim</li> <li>dial.nvim</li> <li>diffview.nvim</li> <li>dropbar.nvim</li> <li>fidget.nvim</li> <li>fine-cmdline.nvim</li> <li>flash.nvim</li> <li>fzf-lua</li> <li>gitsigns.nvim</li> <li>guess-indent.nvim</li> <li>incline.nvim</li> <li>indent-blankline.nvim</li> <li>kanso.nvim</li> <li>lazy.nvim</li> <li>live-server-nvim</li> <li>lualine.nvim</li> <li>mason-conform.nvim</li> <li>mason-lspconfig.nvim</li> <li>mason.nvim</li> <li>mini.surround</li> <li>neo-tree.nvim</li> <li>neodev.nvim</li> <li>nui.nvim</li> <li>nvim-cmp</li> <li>nvim-colorizer.lua</li> <li>nvim-lspconfig</li> <li>nvim-treesitter</li> <li>nvim-web-devicons</li> <li>plenary.nvim</li> <li>snacks.nvim</li> <li>telescope.nvim</li> <li>trouble.nvim</li> <li>which-key.nvim</li> <li>yazi.nvim</li> <li>zen-mode.nvim</li>
                   </ul>`,
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (init.lua)",
-          command: "`<C-h>`",
-          description: "Mover para a janela à esquerda",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (init.lua)',
+          command: '`<C-h>`',
+          description: 'Mover para a janela à esquerda',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (init.lua)",
-          command: "`<C-l>`",
-          description: "Mover para a janela à direita",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (init.lua)',
+          command: '`<C-l>`',
+          description: 'Mover para a janela à direita',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (init.lua)",
-          command: "`<C-j>`",
-          description: "Mover para a janela abaixo",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (init.lua)',
+          command: '`<C-j>`',
+          description: 'Mover para a janela abaixo',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (init.lua)",
-          command: "`<C-k>`",
-          description: "Mover para a janela acima",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (init.lua)',
+          command: '`<C-k>`',
+          description: 'Mover para a janela acima',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (init.lua)",
-          command: "`<leader>s`",
-          description: "Ligar/Desligar corretor ortográfico",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (init.lua)',
+          command: '`<leader>s`',
+          description: 'Ligar/Desligar corretor ortográfico',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (init.lua)",
-          command: "`<leader>ltd`",
-          description: "Toggle diagnostic hints",
-        },
-
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<C-s>`",
-          description: "Salvar arquivo",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<leader>qa`",
-          description: "Sair do nvim",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<Up>`",
-          description: "Seta para Cima Desativada",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<Down>`",
-          description: "Seta para Baixo Desativada",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<Left>`",
-          description: "Seta para Esquerda Desativada",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<Right>`",
-          description: "Seta para Direita Desativada",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<leader>so`",
-          description: "Ativar/Desativar Corretor",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`:`",
-          description: "Abrir linha de comando (FineCmdline)",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<Tab>`",
-          description: "Próximo buffer",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<S-Tab>`",
-          description: "Buffer anterior",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<leader>sv`",
-          description: "Split vertical",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<leader>sh`",
-          description: "Split horizontal",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<A-j>`",
-          description: "Mover linha para baixo",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<A-k>`",
-          description: "Mover linha para cima",
-        },
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (keymaps.lua)",
-          command: "`<leader>bd`",
-          description: "Fechar buffer",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (init.lua)',
+          command: '`<leader>ltd`',
+          description: 'Toggle diagnostic hints',
         },
 
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`]h`",
-          description: "Jump to next git hunk",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<C-s>`',
+          description: 'Salvar arquivo',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`[h`",
-          description: "Jump to previous git hunk",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<leader>qa`',
+          description: 'Sair do nvim',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gs`",
-          description: "Stage git hunk",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<Up>`',
+          description: 'Seta para Cima Desativada',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gr`",
-          description: "Reset git hunk",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<Down>`',
+          description: 'Seta para Baixo Desativada',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gS`",
-          description: "Git Stage buffer",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<Left>`',
+          description: 'Seta para Esquerda Desativada',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gR`",
-          description: "Git Reset buffer",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<Right>`',
+          description: 'Seta para Direita Desativada',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gp`",
-          description: "Git preview hunk",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<leader>so`',
+          description: 'Ativar/Desativar Corretor',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gb`",
-          description: "Git blame line",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`:`',
+          description: 'Abrir linha de comando (FineCmdline)',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gB`",
-          description: "Git blame",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<Tab>`',
+          description: 'Próximo buffer',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>ge`",
-          description: "Git show deleted",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<S-Tab>`',
+          description: 'Buffer anterior',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gt`",
-          description: "Git toggle show blame line",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<leader>sv`',
+          description: 'Split vertical',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (gitsigns.lua)",
-          command: "`<leader>gi`",
-          description: "Git toggle inline diff",
-        },
-
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (neo-tree.lua)",
-          command: "`<leader>te`",
-          description: "Toggle/Focus Neo-tree",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<leader>sh`',
+          description: 'Split horizontal',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (neo-tree.lua)",
-          command: "`<leader>]`",
-          description: "Increase Neo-tree size",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<A-j>`',
+          description: 'Mover linha para baixo',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (neo-tree.lua)",
-          command: "`<leader>[`",
-          description: "Decrease Neo-tree size",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<A-k>`',
+          description: 'Mover linha para cima',
         },
-
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (zen-mode.lua)",
-          command: "`<leader>tz`",
-          description: "Zen Mode",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (keymaps.lua)',
+          command: '`<leader>bd`',
+          description: 'Fechar buffer',
         },
 
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (telescope.lua)",
-          command: "`<leader>ff`",
-          description: "Find Files",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`]h`',
+          description: 'Jump to next git hunk',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (telescope.lua)",
-          command: "`<leader>fg`",
-          description: "Live Grep",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`[h`',
+          description: 'Jump to previous git hunk',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (telescope.lua)",
-          command: "`<leader>fb`",
-          description: "Find Buffers",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gs`',
+          description: 'Stage git hunk',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (telescope.lua)",
-          command: "`<leader>fh`",
-          description: "Help Tags",
-        },
-
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (dial.lua)",
-          command: "`<C-a>`",
-          description: "Increment",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gr`',
+          description: 'Reset git hunk',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (dial.lua)",
-          command: "`<C-x>`",
-          description: "Decrement",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gS`',
+          description: 'Git Stage buffer',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (dial.lua)",
-          command: "`g<C-a>`",
-          description: "Group Increment",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gR`',
+          description: 'Git Reset buffer',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (dial.lua)",
-          command: "`g<C-x>`",
-          description: "Group Decrement",
-        },
-
-        {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (lsp.lua)",
-          command: "`<leader>lr`",
-          description: "[R]ename",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gp`',
+          description: 'Git preview hunk',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (lsp.lua)",
-          command: "`<leader>ca`",
-          description: "[C]ode [A]ction",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gb`',
+          description: 'Git blame line',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (lsp.lua)",
-          command: "`gd`",
-          description: "[G]oto [D]efinition",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gB`',
+          description: 'Git blame',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (lsp.lua)",
-          command: "`gr`",
-          description: "[G]oto [R]eferences",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>ge`',
+          description: 'Git show deleted',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (lsp.lua)",
-          command: "`gI`",
-          description: "[G]oto [I]mplementation",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gt`',
+          description: 'Git toggle show blame line',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (lsp.lua)",
-          command: "`K`",
-          description: "Hover Documentation",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (gitsigns.lua)',
+          command: '`<leader>gi`',
+          description: 'Git toggle inline diff',
         },
 
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (diffview.lua)",
-          command: "`<leader>dv`",
-          description: "DiffViewOpen",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (neo-tree.lua)',
+          command: '`<leader>te`',
+          description: 'Toggle/Focus Neo-tree',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (diffview.lua)",
-          command: "`<leader>dc`",
-          description: "DiffViewClose",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (neo-tree.lua)',
+          command: '`<leader>]`',
+          description: 'Increase Neo-tree size',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (diffview.lua)",
-          command: "`<leader>dh`",
-          description: "DiffViewFileHistory",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (neo-tree.lua)',
+          command: '`<leader>[`',
+          description: 'Decrease Neo-tree size',
         },
 
         {
-          mode: "plugins",
-          context: "Minhas Configs: Atalhos (formatter.lua)",
-          command: "`<leader>vF`",
-          description: "Format buffer",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (zen-mode.lua)',
+          command: '`<leader>tz`',
+          description: 'Zen Mode',
+        },
+
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (telescope.lua)',
+          command: '`<leader>ff`',
+          description: 'Find Files',
         },
         {
-          mode: "plugins",
-          context: "Minhas Configs: Mapeamentos Ativos",
-          command: "Saída de :map",
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (telescope.lua)',
+          command: '`<leader>fg`',
+          description: 'Live Grep',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (telescope.lua)',
+          command: '`<leader>fb`',
+          description: 'Find Buffers',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (telescope.lua)',
+          command: '`<leader>fh`',
+          description: 'Help Tags',
+        },
+
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (dial.lua)',
+          command: '`<C-a>`',
+          description: 'Increment',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (dial.lua)',
+          command: '`<C-x>`',
+          description: 'Decrement',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (dial.lua)',
+          command: '`g<C-a>`',
+          description: 'Group Increment',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (dial.lua)',
+          command: '`g<C-x>`',
+          description: 'Group Decrement',
+        },
+
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (lsp.lua)',
+          command: '`<leader>lr`',
+          description: '[R]ename',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (lsp.lua)',
+          command: '`<leader>ca`',
+          description: '[C]ode [A]ction',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (lsp.lua)',
+          command: '`gd`',
+          description: '[G]oto [D]efinition',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (lsp.lua)',
+          command: '`gr`',
+          description: '[G]oto [R]eferences',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (lsp.lua)',
+          command: '`gI`',
+          description: '[G]oto [I]mplementation',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (lsp.lua)',
+          command: '`K`',
+          description: 'Hover Documentation',
+        },
+
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (diffview.lua)',
+          command: '`<leader>dv`',
+          description: 'DiffViewOpen',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (diffview.lua)',
+          command: '`<leader>dc`',
+          description: 'DiffViewClose',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (diffview.lua)',
+          command: '`<leader>dh`',
+          description: 'DiffViewFileHistory',
+        },
+
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Atalhos (formatter.lua)',
+          command: '`<leader>vF`',
+          description: 'Format buffer',
+        },
+        {
+          mode: 'plugins',
+          context: 'Minhas Configs: Mapeamentos Ativos',
+          command: 'Saída de :map',
           description:
-            "Lista completa de atalhos ativos na sessão, incluindo nativos e de plugins.",
+            'Lista completa de atalhos ativos na sessão, incluindo nativos e de plugins.',
           example: `
           <pre class="w-full bg-stone-50 dark:bg-zinc-900 p-4 rounded-lg overflow-x-auto text-xs"><code>
 n  &lt;Tab&gt;       * &lt;Cmd&gt;bnext&lt;CR&gt;
@@ -1235,26 +1234,26 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
         },
       ];
 
-      const commandsContainer = document.getElementById("commands-container");
-      const searchInput = document.getElementById("searchInput");
-      const clearSearchBtn = document.getElementById("clearSearchBtn");
-      const filterNav = document.getElementById("filter-nav");
-      const noResults = document.getElementById("no-results");
-      const themeToggle = document.getElementById("theme-toggle");
-      const sunIcon = document.getElementById("theme-icon-sun");
-      const moonIcon = document.getElementById("theme-icon-moon");
+      const commandsContainer = document.getElementById('commands-container');
+      const searchInput = document.getElementById('searchInput');
+      const clearSearchBtn = document.getElementById('clearSearchBtn');
+      const filterNav = document.getElementById('filter-nav');
+      const noResults = document.getElementById('no-results');
+      const themeToggle = document.getElementById('theme-toggle');
+      const sunIcon = document.getElementById('theme-icon-sun');
+      const moonIcon = document.getElementById('theme-icon-moon');
 
-      let currentMode = "all";
-      let currentSearch = "";
+      let currentMode = 'all';
+      let currentSearch = '';
       let collapsedSections = new Set();
 
       const updateThemeIcons = (isDark) => {
         if (isDark) {
-          sunIcon.classList.add("hidden");
-          moonIcon.classList.remove("hidden");
+          sunIcon.classList.add('hidden');
+          moonIcon.classList.remove('hidden');
         } else {
-          sunIcon.classList.remove("hidden");
-          moonIcon.classList.add("hidden");
+          sunIcon.classList.remove('hidden');
+          moonIcon.classList.add('hidden');
         }
       };
 
@@ -1275,7 +1274,7 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
         const filteredGroups = Object.values(groupedCommands).filter(
           (group) => {
             const modeMatch =
-              currentMode === "all" || group.mode === currentMode;
+              currentMode === 'all' || group.mode === currentMode;
             if (!modeMatch) return false;
 
             if (currentSearch) {
@@ -1284,68 +1283,68 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
                   cmd.command.toLowerCase().includes(currentSearch) ||
                   cmd.description.toLowerCase().includes(currentSearch) ||
                   (cmd.example &&
-                    cmd.example.toLowerCase().includes(currentSearch)),
+                    cmd.example.toLowerCase().includes(currentSearch))
               );
               return group.filteredCommands.length > 0;
             } else {
               group.filteredCommands = group.commands;
               return true;
             }
-          },
+          }
         );
 
-        commandsContainer.innerHTML = "";
+        commandsContainer.innerHTML = '';
 
         if (filteredGroups.length === 0) {
-          noResults.classList.remove("hidden");
+          noResults.classList.remove('hidden');
         } else {
-          noResults.classList.add("hidden");
+          noResults.classList.add('hidden');
         }
 
         const modeColors = {
-          normal: "bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-300",
+          normal: 'bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-300',
           insert:
-            "bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300",
+            'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300',
           visual:
-            "bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-300",
+            'bg-violet-100 text-violet-800 dark:bg-violet-900 dark:text-violet-300',
           plugins:
-            "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300",
+            'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300',
         };
 
         const generateCommandHTML = (cmd) => {
           let commandText = cmd.command
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
           let descriptionText = cmd.description
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
-          let exampleText = cmd.example ? cmd.example : ""; // Don't escape HTML here
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+          let exampleText = cmd.example ? cmd.example : ''; // Don't escape HTML here
 
           if (currentSearch) {
             const regex = new RegExp(
-              `(${currentSearch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
-              "gi",
+              `(${currentSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`,
+              'gi'
             );
             commandText = commandText.replace(
               regex,
-              `<span class="command-highlight">$1</span>`,
+              `<span class="command-highlight">$1</span>`
             );
             descriptionText = descriptionText.replace(
               regex,
-              `<span class="command-highlight">$1</span>`,
+              `<span class="command-highlight">$1</span>`
             );
             // A bit tricky to highlight inside HTML, so we do it carefully
-            if (cmd.example && !cmd.example.includes("<")) {
+            if (cmd.example && !cmd.example.includes('<')) {
               exampleText = exampleText.replace(
                 regex,
-                `<span class="command-highlight">$1</span>`,
+                `<span class="command-highlight">$1</span>`
               );
             }
           }
 
           const cleanCommand = cmd.command
-            .replace(/`/g, "")
-            .replace("{char}", "");
+            .replace(/`/g, '')
+            .replace('{char}', '');
 
           const exampleHTML = cmd.example
             ? `
@@ -1354,7 +1353,7 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
                   <span class="font-semibold text-stone-700 dark:text-stone-300 block mb-2"></span> ${exampleText}
               </div>
           </div>`
-            : "";
+            : '';
 
           return `
           <div class="py-4 border-b border-stone-200 dark:border-zinc-700 last:border-b-0">
@@ -1364,7 +1363,7 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
                   <button class="copy-btn group relative shrink-0" data-command="${cleanCommand}" aria-label="Copiar comando ${cleanCommand}">
                        <span class="absolute -top-8 -left-1/2 transform translate-x-1/4 w-auto min-w-max px-2 py-1 bg-zinc-600 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity">Copiar</span>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-stone-500 dark:text-stone-400 hover:text-zinc-800 dark:hover:text-zinc-100 transition-colors">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
                       </svg>
                   </button>
               </div>
@@ -1374,22 +1373,22 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
 
         const sortedGroups = Object.values(filteredGroups).sort((a, b) => {
           const order = [
-            "Movimentação (Cursor)",
-            "Operadores (Ação + Movimento)",
-            "Text Objects (Alvos de Operação)",
-            "Combinações (Fluxos de Trabalho)",
-            "Edição (Ações)",
-            "Entrada no Modo",
-            "Seleção Avançada (Modo Visual)",
-            "Ações na Seleção",
-            "Plugins (nvim-surround)",
-            "Minhas Configs: Plugins Instalados",
+            'Movimentação (Cursor)',
+            'Operadores (Ação + Movimento)',
+            'Text Objects (Alvos de Operação)',
+            'Combinações (Fluxos de Trabalho)',
+            'Edição (Ações)',
+            'Entrada no Modo',
+            'Seleção Avançada (Modo Visual)',
+            'Ações na Seleção',
+            'Plugins (nvim-surround)',
+            'Minhas Configs: Plugins Instalados',
           ];
           let indexA = order.indexOf(a.context);
           let indexB = order.indexOf(b.context);
 
-          if (a.context.startsWith("Minhas Configs:")) indexA = order.length;
-          if (b.context.startsWith("Minhas Configs:")) indexB = order.length;
+          if (a.context.startsWith('Minhas Configs:')) indexA = order.length;
+          if (b.context.startsWith('Minhas Configs:')) indexB = order.length;
 
           if (indexA !== -1 && indexB !== -1) {
             if (indexA === indexB) return a.context.localeCompare(b.context);
@@ -1406,37 +1405,39 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
           const isCollapsed =
             isCollapsible && collapsedSections.has(group.context);
 
-          const card = document.createElement("div");
-          card.className = `card bg-white dark:bg-zinc-800 rounded-xl shadow-lg transition-all duration-300 card-fade-in hover:shadow-xl dark:hover:shadow-zinc-700/50 ${isCollapsed ? "collapsed" : ""}`;
+          const card = document.createElement('div');
+          card.className = `card bg-white dark:bg-zinc-800 rounded-xl shadow-lg transition-all duration-300 card-fade-in hover:shadow-xl dark:hover:shadow-zinc-700/50 ${
+            isCollapsed ? 'collapsed' : ''
+          }`;
           card.dataset.context = group.context;
 
           const horizontalCommands = group.filteredCommands.filter(
-            (c) => c.orientation === "horizontal",
+            (c) => c.orientation === 'horizontal'
           );
           const verticalCommands = group.filteredCommands.filter(
-            (c) => c.orientation === "vertical",
+            (c) => c.orientation === 'vertical'
           );
           const otherCommands = group.filteredCommands.filter(
-            (c) => !c.orientation,
+            (c) => !c.orientation
           );
 
-          let commandsHTML = "";
+          let commandsHTML = '';
 
           if (horizontalCommands.length > 0) {
             commandsHTML += `<h3 class="orientation-header">Na Horizontal</h3>`;
             commandsHTML += horizontalCommands
               .map(generateCommandHTML)
-              .join("");
+              .join('');
           }
           if (verticalCommands.length > 0) {
             commandsHTML += `<h3 class="orientation-header">Na Vertical</h3>`;
-            commandsHTML += verticalCommands.map(generateCommandHTML).join("");
+            commandsHTML += verticalCommands.map(generateCommandHTML).join('');
           }
           if (otherCommands.length > 0) {
-            if (group.context === "Movimentação (Cursor)") {
+            if (group.context === 'Movimentação (Cursor)') {
               commandsHTML += `<h3 class="orientation-header">Outros</h3>`;
             }
-            commandsHTML += otherCommands.map(generateCommandHTML).join("");
+            commandsHTML += otherCommands.map(generateCommandHTML).join('');
           }
 
           const modeName =
@@ -1448,17 +1449,21 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
           </svg>
         `
-            : "";
+            : '';
 
-          const headerTag = "button";
+          const headerTag = 'button';
 
           card.innerHTML = `
             <${headerTag} class="card-header flex justify-between items-center p-6 w-full text-left cursor-pointer">
                 <div class="flex items-center gap-4">
                   ${chevronIcon}
-                  <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">${group.context}</h2>
+                  <h2 class="text-xl font-semibold text-zinc-800 dark:text-zinc-100">${
+                    group.context
+                  }</h2>
                 </div>
-                <span class="text-xs font-semibold px-2 py-1 rounded-full ${modeColors[group.mode] || ""} shrink-0">${modeName}</span>
+                <span class="text-xs font-semibold px-2 py-1 rounded-full ${
+                  modeColors[group.mode] || ''
+                } shrink-0">${modeName}</span>
             </${headerTag}>
             <div class="card-content px-6 pb-6">
                 ${commandsHTML}
@@ -1468,77 +1473,77 @@ n  &lt;Space&gt;bd   * &lt;Cmd&gt;bdelete&lt;CR&gt;
         });
       };
 
-      filterNav.addEventListener("click", (e) => {
-        if (e.target.classList.contains("filter-btn")) {
+      filterNav.addEventListener('click', (e) => {
+        if (e.target.classList.contains('filter-btn')) {
           currentMode = e.target.dataset.mode;
           document
-            .querySelectorAll(".filter-btn")
-            .forEach((btn) => btn.classList.remove("active-filter"));
-          e.target.classList.add("active-filter");
+            .querySelectorAll('.filter-btn')
+            .forEach((btn) => btn.classList.remove('active-filter'));
+          e.target.classList.add('active-filter');
           renderCommands();
         }
       });
 
-      searchInput.addEventListener("input", (e) => {
+      searchInput.addEventListener('input', (e) => {
         currentSearch = e.target.value.toLowerCase();
-        clearSearchBtn.classList.toggle("hidden", !currentSearch);
+        clearSearchBtn.classList.toggle('hidden', !currentSearch);
         renderCommands();
       });
 
-      clearSearchBtn.addEventListener("click", () => {
-        searchInput.value = "";
-        currentSearch = "";
-        clearSearchBtn.classList.add("hidden");
+      clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        currentSearch = '';
+        clearSearchBtn.classList.add('hidden');
         renderCommands();
         searchInput.focus();
       });
 
-      themeToggle.addEventListener("click", () => {
-        const isDark = document.documentElement.classList.toggle("dark");
-        localStorage.setItem("theme", isDark ? "dark" : "light");
+      themeToggle.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
         updateThemeIcons(isDark);
       });
 
-      commandsContainer.addEventListener("click", (e) => {
-        const copyBtn = e.target.closest(".copy-btn");
+      commandsContainer.addEventListener('click', (e) => {
+        const copyBtn = e.target.closest('.copy-btn');
         if (copyBtn) {
           const commandToCopy = copyBtn.dataset.command;
           navigator.clipboard
             .writeText(commandToCopy)
             .then(() => {
-              const tooltip = copyBtn.querySelector("span");
+              const tooltip = copyBtn.querySelector('span');
               const originalText = tooltip.textContent;
-              tooltip.textContent = "Copiado!";
+              tooltip.textContent = 'Copiado!';
               setTimeout(() => {
                 tooltip.textContent = originalText;
               }, 1500);
             })
             .catch((err) => {
-              console.error("Falha ao copiar: ", err);
+              console.error('Falha ao copiar: ', err);
             });
           return;
         }
 
-        const cardHeader = e.target.closest(".card-header");
+        const cardHeader = e.target.closest('.card-header');
         if (cardHeader) {
-          const card = cardHeader.closest(".card");
+          const card = cardHeader.closest('.card');
           const context = card.dataset.context;
           if (collapsedSections.has(context)) {
             collapsedSections.delete(context);
           } else {
             collapsedSections.add(context);
           }
-          card.classList.toggle("collapsed");
+          card.classList.toggle('collapsed');
         }
       });
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const savedTheme = localStorage.getItem("theme");
+      document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)",
+          '(prefers-color-scheme: dark)'
         ).matches;
-        if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-          document.documentElement.classList.add("dark");
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+          document.documentElement.classList.add('dark');
           updateThemeIcons(true);
         } else {
           updateThemeIcons(false);
